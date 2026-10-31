@@ -67,7 +67,16 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .pv.hide + .grip,.pv.full + .grip{display:none}
 
 .panel{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px calc(24px + env(safe-area-inset-bottom))}
-.panel.ed{display:flex;flex-direction:column;padding-bottom:10px;overflow:hidden}
+.panel.ed{display:flex;flex-direction:column;padding-bottom:10px;overflow-y:auto}
+/* 키보드가 올라와 화면이 좁아졌을 때(html.kb): 글 칸이 가려지지 않게 미리보기·아래 탭·위 버튼을 줄임 */
+html.kb .tabs{display:none}
+html.kb .pv:not(.hide):not(.full){max-height:30%}
+html.kb .pvbar{display:none}
+html.kb .panel.ed .edtop,html.kb .panel.ed .tbhead,html.kb .panel.ed .edfoot{display:none}
+html.kb .panel.ed .tb{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+html.kb .panel.ed .tb::-webkit-scrollbar{display:none}
+html.kb .panel.ed{padding-top:8px;padding-bottom:6px}
+html.kb #ed{min-height:60px}
 .tabs{flex:none;height:calc(var(--tabH) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line)}
 .tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;color:var(--muted);position:relative}
 .tab svg.i{width:22px;height:22px}
@@ -335,7 +344,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
    (내부 저장소 이름·파일 형식 표시는 예전 이름 log-atelier 그대로 — 저장된 로그를 이어 쓰기 위해)
    모든 작업은 이 브라우저 안에서만 처리됨 (서버 없음)
    ═══════════════════════════════════════════════════════════ */
-const APP_VER = '1.4.3';
+const APP_VER = '1.5.0';
 const DB_NAME = 'log-atelier';
 
 /* ── 작은 도구들 ── */
@@ -464,7 +473,7 @@ function DEFAULT_STYLE() {
       mode: 'full', scrollH: 560, scrollFixed: true, titleOutside: true, foldLabel: '펼쳐 보기', foldOpen: false, foldScroll: false, foldTrigger: 'label', foldAlign: 'left'
     },
     card: { color: '#FFFDF8', alpha: 100, pattern: 'none', patternColor: '#D9E2EE' },
-    bg: { type: 'preset', preset: 'paper', color: '#ECE6DB', g1: '#F6E7E1', g2: '#E3E7F3', g3: '', angle: 160, gkind: 'linear', img: '', imgFit: 'cover', imgPos: 'center', tint: '#000000', tintA: 0, body: false },
+    bg: { target: 'outer', type: 'preset', preset: 'paper', color: '#ECE6DB', g1: '#F6E7E1', g2: '#E3E7F3', g3: '', angle: 160, gkind: 'linear', img: '', imgFit: 'cover', imgPos: 'center', tint: '#000000', tintA: 0, body: false },
     text: {
       font: 'ridi', size: 16, lh: 1.9, para: 14, ls: 0, ws: 0, align: 'left', indent: 0, color: '#3A3530', weight: 400,
       keepAll: true, lineMode: 'line', blankGap: 10, dropcap: false, dropcapSize: 3, dropcapColor: '',
@@ -515,13 +524,13 @@ function DEFAULT_STYLE() {
 }
 /* 테마를 바꿔도 사용자가 정한 '구조' 값은 유지 */
 const KEEP_ON_THEME = ['layout.mode', 'layout.scrollH', 'layout.scrollFixed', 'layout.titleOutside', 'layout.foldLabel', 'layout.foldOpen', 'layout.template',
-  'text.lineMode', 'text.dialogBreak', 'text.dialogBreakCorner', 'text.blankGap', 'end.text', 'custom.css', 'speakers', 'msgr'];
+  'text.lineMode', 'text.dialogBreak', 'text.dialogBreakCorner', 'text.blankGap', 'end.text', 'custom.css', 'speakers', 'msgr', 'bg.target'];
 
 function DEFAULT_OUT() {
   return { profile: 'kkangtong', important: true, guard: true, compact: false, pvSite: true, siteSub: true, fontMode: 'auto', pretty: true, form: 'snippet', withBg: true,
     custom: { style: true, fontFace: true, importCss: true, details: true, dataImg: true, bodyRule: false, siteFonts: '', maxChars: 0 } };
 }
-function DEFAULT_IMG() { return { scale: 2, fmt: 'png', quality: 92, maxH: 2000, withBg: true, width: 'preview', widthPx: 400, split: 'auto', count: 3, ratio: '9:16' }; }
+function DEFAULT_IMG() { return { scale: 2, fmt: 'png', quality: 92, maxH: 2000, withBg: true, width: 'preview', widthPx: 400, split: 'auto', count: 3, ratio: '9:16', pageNo: true }; }
 function DEFAULT_META() { return { title: '', sub: '', kicker: '', author: '', date: '', cw: '', note: '' }; }
 
 const PROFILES = {
@@ -623,7 +632,7 @@ function coerceLike(def, v) {
   return v === undefined ? def : v;
 }
 const ENUMS = { align: ['left', 'center', 'right', 'justify'], foldAlign: ['left', 'center', 'right'], imgPos: ['center', 'top', 'bottom', 'left', 'right'],
-  template: ['novel', 'messenger'], split: ['msg', 'para'], avShape: ['circle', 'round'], roleColor: ['auto', 'on', 'off'], narr: ['plain', 'center'] };
+  template: ['novel', 'messenger'], target: ['outer', 'card'], split: ['msg', 'para'], avShape: ['circle', 'round'], roleColor: ['auto', 'on', 'off'], narr: ['plain', 'center'] };
 function fixEnums(o) { for (const [k, v] of Object.entries(o)) { if (isObj(v)) fixEnums(v); else if (ENUMS[k] && !ENUMS[k].includes(v)) o[k] = ENUMS[k][0]; } }
 function normalizeStyle(st) {
   const s = coerceLike(DEFAULT_STYLE(), isObj(st) ? st : {}); fixEnums(s);
@@ -1833,6 +1842,32 @@ function rCover(R, env) {
   return `<div${R.mode === 'image' ? ' data-cut=""' : ''} style="${st(R, { margin: `0 0 ${C.gap}px 0`, padding: '0', 'text-align': al })}">${parts.join('')}</div>`;
 }
 
+/* ── 카드 겉모습: 색·무늬·(카드 안에 칠한) 배경 디자인·테두리·둥글기·그림자 ──
+   shiftY: 이미지를 여러 장으로 나눌 때 줄 노트 무늬가 글줄과 맞도록 무늬 위치를 옮김 */
+function splitTop(v) {   // 쉼표로 나누되 괄호 안 쉼표는 그대로
+  const out = []; let d = 0, cur = '';
+  for (const ch of String(v || '')) { if (ch === '(') d++; else if (ch === ')') d--; if (ch === ',' && d === 0) { out.push(cur.trim()); cur = ''; } else cur += ch; }
+  if (cur.trim()) out.push(cur.trim()); return out;
+}
+function cardFace(R, shiftY = 0) {
+  const S = R.S, L = S.layout, C = S.card, T = S.text;
+  if (!L.cardOn) return {};
+  const o = { 'background-color': hexA(cleanColor(C.color, '#FFFDF8'), num(C.alpha, 100)), border: L.border && L.borderW > 0 ? `${L.borderW}px solid ${cleanColor(L.borderColor, '#E6DDCC')}` : undefined, 'border-radius': L.radius + 'px', 'box-shadow': SHADOWS[L.shadow] || undefined };
+  const layers = [];   // [그림, 크기, 위치, 반복] — 앞이 위
+  const pc = cleanColor(C.patternColor, '#D9E2EE');
+  if (C.pattern === 'lined') { const step = (T.size * T.lh).toFixed(2); layers.push([`repeating-linear-gradient(180deg,transparent 0,transparent calc(${step}px - 1px),${pc} calc(${step}px - 1px),${pc} ${step}px)`, 'auto', `0 ${L.padY + Math.round(T.size * (T.lh - 1) / 2) + shiftY}px`, 'repeat']); }
+  if (C.pattern === 'grid') for (const g of [`linear-gradient(${pc} 1px,transparent 1px)`, `linear-gradient(90deg,${pc} 1px,transparent 1px)`]) layers.push([g, '20px 20px', `0 ${shiftY}px`, 'repeat']);
+  if (S.bg.target === 'card') {
+    const b = bgParts(S.bg, R.assets).o;
+    if (b['background-color']) o['background-color'] = b['background-color'];
+    const cyc = (v, d) => { const a = splitTop(v || d); return i => a[i % a.length]; };
+    const sz = cyc(b['background-size'], 'auto'), ps = cyc(b['background-position'], '0 0'), rp = cyc(b['background-repeat'], 'repeat');
+    splitTop(b['background-image']).forEach((im, i) => layers.push([im, sz(i), ps(i), rp(i)]));
+  }
+  if (layers.length) Object.assign(o, { 'background-image': layers.map(x => x[0]).join(','), 'background-size': layers.map(x => x[1]).join(','), 'background-position': layers.map(x => x[2]).join(','), 'background-repeat': layers.map(x => x[3]).join(',') });
+  return o;
+}
+
 /* ── 전체 ── */
 const parseCache = { text: null, key: null, root: null, stats: null };
 function renderDoc(mode, opt = {}) {
@@ -1879,16 +1914,22 @@ function renderDoc(mode, opt = {}) {
     }
   }
   // 배경 빼기: 이미지는 이미지 설정, HTML(미리보기 포함)은 내보내기 설정을 따름 — 바깥 배경·여백 없이 카드만
+  // 배경을 '카드 안'에 칠하면 바깥은 비우고 카드가 배경 디자인을 가짐 (카드만 저장해도 그대로 남음)
   const noBg = mode === 'image' ? !P.img.withBg : P.out.withBg === false;
-  const bg = noBg ? { o: {}, base: '' } : bgParts(S.bg, R.assets);
-  if (bg.data) R.dataImg = (R.dataImg || 0) + bg.data;
-  const rootSt = { ...bg.o, margin: '0', padding: noBg ? '0' : `${L.outerY}px ${L.outerX}px`, 'box-sizing': 'border-box', 'font-family': base['font-family'], color: base.color, 'line-height': base['line-height'], 'font-size': base['font-size'], 'text-align': 'left' };
-  const C = S.card;
-  const cardSt = { 'max-width': L.width + 'px', margin: '0 auto', 'box-sizing': 'border-box', padding: `${L.padY}px ${L.padX}px` };
-  if (L.cardOn) {
-    Object.assign(cardSt, { 'background-color': hexA(cleanColor(C.color, '#FFFDF8'), num(C.alpha, 100)), border: L.border && L.borderW > 0 ? `${L.borderW}px solid ${cleanColor(L.borderColor, '#E6DDCC')}` : undefined, 'border-radius': L.radius + 'px', 'box-shadow': SHADOWS[L.shadow] || undefined });
-    if (C.pattern === 'lined') { const step = (T.size * T.lh).toFixed(2), pc = cleanColor(C.patternColor, '#D9E2EE'); cardSt['background-image'] = `repeating-linear-gradient(180deg,transparent 0,transparent calc(${step}px - 1px),${pc} calc(${step}px - 1px),${pc} ${step}px)`; cardSt['background-position'] = `0 ${L.padY + Math.round(T.size * (T.lh - 1) / 2)}px`; }
-    if (C.pattern === 'grid') { const pc = cleanColor(C.patternColor, '#D9E2EE'); cardSt['background-image'] = `linear-gradient(${pc} 1px,transparent 1px),linear-gradient(90deg,${pc} 1px,transparent 1px)`; cardSt['background-size'] = '20px 20px'; }
+  const onCard = S.bg.target === 'card' && L.cardOn;
+  const bgFull = bgParts(S.bg, R.assets);
+  const bg = noBg || onCard ? { o: {}, base: '' } : bgFull;
+  if (bgFull.data && (onCard || !noBg)) R.dataImg = (R.dataImg || 0) + bgFull.data;
+  const outerPad = noBg ? '0' : `${L.outerY}px ${L.outerX}px`;
+  const rootSt = { ...bg.o, margin: '0', padding: opt.bare ? '0' : outerPad, 'box-sizing': 'border-box', 'font-family': base['font-family'], color: base.color, 'line-height': base['line-height'], 'font-size': base['font-size'], 'text-align': 'left' };
+  const cardBox = { 'max-width': L.width + 'px', margin: '0 auto', 'box-sizing': 'border-box' };
+  let cardSt = { ...cardBox, padding: `${L.padY}px ${L.padX}px`, ...cardFace(R) };
+  // 이미지 여러 장: 글 층(bare)은 배경·카드 겉모습 없이 그리고, 장마다 틀(배경+카드)을 따로 그려 겹침
+  R.frame = { root: { ...bg.o, margin: '0', padding: outerPad, 'box-sizing': 'border-box' }, card: shift => ({ ...cardBox, ...cardFace(R, shift) }), O: noBg ? 0 : L.outerY, X: noBg ? 0 : L.outerX, P: L.padY };
+  if (opt.bare) {
+    for (const k of Object.keys(bg.o)) delete rootSt[k];
+    const bw = L.cardOn && L.border && L.borderW > 0 ? L.borderW : 0;   // 테두리 두께는 남겨야 글 위치가 같음
+    cardSt = { ...cardBox, padding: `${L.padY}px ${L.padX}px`, border: bw ? `${bw}px solid transparent` : undefined };
   }
   const coverOut = inOut && !(modeL === 'fold' && L.foldTrigger === 'cover' && cover);
   const html = `<div id="${R.id}" style="${st(R, rootSt)}"><div style="${st(R, cardSt)}">${coverOut ? cover : ''}${body}</div></div>`;
@@ -2042,7 +2083,7 @@ async function buildFontCss(R, { embed = false, method = 'auto', cps = new Set()
 
 /* mode: 'export'(게시용) / 'image'(이미지 그리기용) */
 async function buildOutput(mode = 'export', opt = {}) {
-  const R = renderDoc(mode);
+  const R = renderDoc(mode, { bare: !!opt.bare });
   const prof = R.prof, out = P.out;
   const cps = plainChars(R.html);
   const warns = [...R.warn];
@@ -2663,15 +2704,24 @@ function confirmBox(msg, okLabel = '확인', danger = false) {
 /* ── 글꼴 고르기 ── */
 const SAMPLE = '다람쥐 헌 쳇바퀴에 타고파 · Aa 123';
 const appFontLoaded = new Set();
+/* 글꼴 고르기 미리보기: 구글에 있는 글꼴은 보기 글자만 잘라 받음(아주 작음), 나머지는 글꼴 파일 하나를 받음 */
 function previewFontInApp(f, full) {
   if (appFontLoaded.has(f.id + (full ? ':f' : ''))) return;
   appFontLoaded.add(f.id + (full ? ':f' : ''));
-  if (f.g && !full) {
+  const g = f.g ? (f.gfam ? f.gfam.replace(/ /g, '+') : f.g) : f.ga && f.ga.g;
+  if (g && !full) {
     const l = document.createElement('link'); l.rel = 'stylesheet';
-    l.href = `https://fonts.googleapis.com/css2?family=${f.gfam ? f.gfam.replace(/ /g, '+') : f.g}&text=${encodeURIComponent(SAMPLE + f.n)}&display=swap`;
+    l.href = `https://fonts.googleapis.com/css2?family=${g}&text=${encodeURIComponent(SAMPLE + f.n)}&display=swap`;
     document.head.appendChild(l); return;
   }
   FontLoader.ensure([f.id], [document]);
+}
+/* 글꼴 파일까지 저절로 받아도 되는 연결인지 (와이파이·PC는 자동, 모바일 데이터·데이터 절약 모드는 [보기]로) */
+function autoFontFiles() {
+  const c = navigator.connection;
+  if (c && c.saveData) return false;
+  if (c && c.type) return c.type === 'wifi' || c.type === 'ethernet';
+  return !(window.matchMedia && matchMedia('(pointer: coarse)').matches);
 }
 function pickFont(cur, opt = {}) {
   return new Promise(res => {
@@ -2683,7 +2733,17 @@ function pickFont(cur, opt = {}) {
       let cat = set ? 'site' : 'all', q = '';
       const catBar = h('div.fcat'); const list = h('div.flist');
       const search = h('input', { type: 'search', placeholder: '글꼴 이름 찾기', style: { marginBottom: '10px' } });
-      const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { let f = fontById(e.target.dataset.id); if (f && f.site) f = FONT_MAP.get(f.eq); if (f && f.g) previewFontInApp(f, false); io.unobserve(e.target); } }, { root: body });
+      const auto = autoFontFiles(); const vis = new Set();
+      const io = new IntersectionObserver(es => {
+        for (const e of es) {
+          const id = e.target.dataset.id; if (!e.isIntersecting) { vis.delete(id); continue; }
+          let f = fontById(id); if (f && f.site) f = f.eq ? FONT_MAP.get(f.eq) : null; if (!f) { io.unobserve(e.target); continue; }
+          if (f.g || f.ga) { previewFontInApp(f, false); io.unobserve(e.target); continue; }
+          if (!auto) { io.unobserve(e.target); continue; }
+          // 파일 글꼴: 빨리 스쳐 지나가는 줄은 받지 않게 잠깐 기다렸다가
+          vis.add(id); setTimeout(() => { if (!vis.has(id)) return; previewFontInApp(f, true); const b = e.target.querySelector('.pvb'); if (b) b.textContent = '불러옴'; io.unobserve(e.target); }, 350);
+        }
+      }, { root: body });
       const draw = () => {
         catBar.innerHTML = ''; cats.forEach(([k, n]) => catBar.append(h('button.chip' + (cat === k ? '.on' : ''), { type: 'button', onclick: () => { cat = k; draw(); } }, n)));
         list.innerHTML = '';
@@ -2697,14 +2757,14 @@ function pickFont(cur, opt = {}) {
           const loadBtn = f.f || (f.site && f.eq && FONT_MAP.get(f.eq).f) || (f.custom && f.kind !== 'url' && f.kind !== 'name') ? h('button.pvb', { type: 'button', onclick: e => { e.stopPropagation(); previewFontInApp(f, true); loadBtn.textContent = '불러옴'; } }, '보기') : null;
           const row = h('button.fitem' + (cur === f.id ? '.on' : ''), { type: 'button', 'data-id': f.id, onclick: () => { pick = f.id; close(); } },
             h('span.fn', h('b', f.n, f.missing ? ' (파일 없음)' : ''), h('small', f.site ? `${setName} 게시글에 그대로 보임${f.eq ? '' : ' · 미리보기는 기기 글꼴'}` : [f.sub, f.g ? '구글' : f.custom ? '내 글꼴' : '웹폰트', !set && googleSpec(f) ? 'HTML에 넣기 가능' : '', subNote].filter(Boolean).join(' · ')), smp), loadBtn);
-          list.append(row); if (f.g || (f.site && f.eq && FONT_MAP.get(f.eq).g)) io.observe(row);
+          list.append(row); if (!f.custom || f.kind !== 'name') io.observe(row);
         }
         if (!shown.length && cat !== 'mine') list.append(h('div.empty', '찾는 글꼴이 없어요.'));
       };
       search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); draw(); });
       body.append(search, catBar,
         set ? h('div.note', `${setName}은 게시할 때 글꼴 파일을 지워서, [${setName} 글꼴]만 게시글에 그대로 보여요. 다른 글꼴은 게시글에서 비슷한 ${setName} 글꼴로 바뀌어요. 이미지로 저장할 때는 고른 글꼴 그대로 나와요.`) : null,
-        h('p.help', { style: { margin: '-2px 0 10px' } }, '구글 글꼴은 미리보기가 바로 보이고, 나머지는 [보기]를 눌러야 불러와요(데이터 절약).'), list);
+        h('p.help', { style: { margin: '-2px 0 10px' } }, auto ? '보이는 글꼴은 미리보기를 저절로 불러와요.' : '모바일 데이터에선 데이터를 아끼려고, 구글 글꼴 말고는 [보기]를 눌러야 미리보기를 불러와요 (글꼴 파일 하나에 약 0.3~2MB).'), list);
       draw();
     }, { onClose: () => res(pick) });
   });
@@ -2755,6 +2815,7 @@ async function copyText(t) {
 /* ═════════ 꾸미기 탭 ═════════ */
 function effectiveBg() {
   const S = P.style;
+  if (S.layout.cardOn && S.bg.target === 'card') { const b = bgParts(S.bg, P.assets); return b.isImg ? null : b.base || S.card.color; }
   if (S.layout.cardOn && num(S.card.alpha, 100) >= 80) return S.card.color;
   const b = bgParts(S.bg, P.assets); return b.isImg ? null : b.base;
 }
@@ -2782,7 +2843,7 @@ function buildDesignPanel(root) {
     sec('speakers', '화자별 꾸미기', () => { const n = speakerNames().length; return n ? `화자 ${n}명` : '[msg]·[sp] 없음'; }, buildSpeakerSec, ['speakers']),
     sec('hl', '형광펜', '6가지', buildHlSec, ['hl']),
     sec('hr', '구분선 ---', () => ({ 'glyph-line': '선+문양', glyph: '문양', line: '실선', dashed: '점선', dotted: '도트선', double: '이중선', fade: '흐린 선', space: '빈 공간' })[P.style.hr.kind] || '', buildHrSec, ['hr']),
-    sec('bg', '배경', () => ({ none: '없음', solid: '단색', gradient: '그라데이션', preset: '샘플', image: '이미지' })[P.style.bg.type], buildBgSec, ['bg']),
+    sec('bg', '배경', () => (P.style.bg.target === 'card' && P.style.layout.cardOn ? '카드 안 · ' : '') + ({ none: '없음', solid: '단색', gradient: '그라데이션', preset: '샘플', image: '이미지' })[P.style.bg.type], buildBgSec, ['bg']),
     sec('boxes', '특수 상자·접기 구간', '편지·쪽지·시스템·회상', buildBoxSec, ['boxes', 'fold']),
     sec('adv', '고급', '직접 CSS', buildAdvSec, ['custom'])
   );
@@ -2872,7 +2933,8 @@ function buildLayoutSec(b) {
       UI.when(h('div', cRange('layout.scrollH', '상자 높이', 120, 1600, 10, 'px', { hardMax: 5000 }), cCheck('layout.scrollFixed', '높이 고정', '끄면 내용이 짧을 때 상자도 줄어요')), () => P.style.layout.foldScroll)), () => P.style.layout.mode === 'fold'),
     h('div.sub-h', '카드 (글 상자)'),
     cCheck('layout.cardOn', '카드 쓰기', '끄면 배경 위에 글만'),
-    UI.when(h('div', cColor('card.color', '카드 색'), cRange('card.alpha', '카드 불투명도', 0, 100, 1, '%'),
+    UI.when(h('div', UI.when(h('div', cColor('card.color', '카드 색'), cRange('card.alpha', '카드 불투명도', 0, 100, 1, '%')), () => P.style.bg.target !== 'card'),
+      UI.when(h('div.note', '배경을 [카드 안]에 칠하고 있어서 카드 색 대신 [배경]의 디자인이 카드에 들어가요.'), () => P.style.bg.target === 'card'),
       cSeg('card.pattern', '카드 무늬', [['none', '없음'], ['lined', '줄 노트'], ['grid', '모눈']]),
       UI.when(cColor('card.patternColor', '무늬 색'), () => P.style.card.pattern !== 'none'),
       cRange('layout.padY', '안쪽 여백 (위아래)', 0, 80, 1, 'px', { hardMax: 200 }), cRange('layout.padX', '안쪽 여백 (좌우)', 0, 80, 1, 'px', { hardMax: 200 }),
@@ -3136,6 +3198,9 @@ function buildBgSec(b) {
   const updImg = () => { const u = P.style.bg.img; imgInfo.textContent = !u ? '아직 그림이 없어요.' : u.startsWith('asset:') ? `기기에서 넣은 그림 (${fmtBytes(((P.assets[u.slice(6)] || '').length) * 0.75)}) — HTML 안에 직접 들어가요.` : `주소: ${u}`; };
   UI.on('bg.img', updImg); updImg();
   b.append(
+    cSeg('bg.target', '칠할 곳', [['outer', '카드 바깥'], ['card', '카드 안']]),
+    UI.when(h('p.help', { style: { marginTop: '-4px' } }, '카드 바깥: 카드 둘레의 여백에 칠해요. 카드 안: 카드 자체를 이 디자인으로 칠해요 (카드 색 대신).'), () => P.style.layout.cardOn),
+    UI.when(h('div.note.warn', '[틀·상자]에서 카드를 꺼 둬서 카드 바깥(전체)에 칠해져요.'), () => !P.style.layout.cardOn && P.style.bg.target === 'card'),
     cSeg('bg.type', '종류', [['none', '없음'], ['solid', '단색'], ['gradient', '그라데이션'], ['preset', '샘플'], ['image', '이미지']]),
     UI.when(cColor('bg.color', '배경색'), () => ['solid', 'image'].includes(P.style.bg.type)),
     UI.when(h('div', cColor('bg.g1', '색 1'), cColor('bg.g2', '색 2'), cColor('bg.g3', '색 3 (선택)', { empty: true }), cSeg('bg.gkind', '방향', [['linear', '직선'], ['radial', '원형']]),
@@ -3152,9 +3217,9 @@ function buildBgSec(b) {
       cColor('bg.tint', '덧칠 색'), cRange('bg.tintA', '덧칠 진하기', 0, 90, 1, '%', { help: '그림 위에 색을 얹어 글을 잘 보이게' }),
       h('button.btn.sm', { type: 'button', style: { marginTop: '8px' }, onclick: () => extractPalette(pal) }, '그림에서 어울리는 색 뽑기'), pal,
       h('p.help', '주소 방식이 가볍고 안전해요. 기기 그림은 줄여서 넣지만, 글자 수 제한이 있는 사이트에서는 부담이 될 수 있어요.')), () => P.style.bg.type === 'image'),
-    h('div.sub-h', '게시물 전체 배경'),
-    cCheck('bg.body', '사이트 게시물 바탕까지 칠하기', '깡통 전용 (body 규칙 → .glitch-body)'),
-    h('p.help', '깡통 커뮤니티는 body 배경 규칙을 게시물 바탕(.glitch-body)으로 바꿔 줘서, 로그 밖 여백까지 같은 배경이 돼요. 다른 사이트에서는 쓰지 마세요.')
+    UI.when(h('div', h('div.sub-h', '게시물 전체 배경'),
+      cCheck('bg.body', '사이트 게시물 바탕까지 칠하기', '깡통 전용 (body 규칙 → .glitch-body)'),
+      h('p.help', '깡통 커뮤니티는 body 배경 규칙을 게시물 바탕(.glitch-body)으로 바꿔 줘서, 로그 밖 여백까지 같은 배경이 돼요. 다른 사이트에서는 쓰지 마세요.')), () => P.style.bg.target !== 'card' || !P.style.layout.cardOn)
   );
 }
 async function extractPalette(box) {
@@ -3282,14 +3347,19 @@ const OutPanel = {
         cSeg('img.split', '여러 장으로 나누기', [['auto', '안 나눔'], ['count', '장 수로'], ['ratio', '화면 비율로'], ['height', '높이로']]),
         UI.when(cRange('img.count', '몇 장으로', 2, 20, 1, '장', { hardMax: 40 }), () => P.img.split === 'count'),
         UI.when(cSeg('img.ratio', '한 장 비율 (가로:세로)', [['9:16', '9:16 폰 화면'], ['2:3', '2:3'], ['3:4', '3:4'], ['4:5', '4:5'], ['1:1', '1:1']]), () => P.img.split === 'ratio'),
-        UI.when(cRange('img.maxH', '한 장 높이', 300, 6000, 50, 'px', { hardMax: 20000 }), () => P.img.split === 'height'),
-        h('p.help', '문단과 문단 사이 빈 곳에서 잘라서 글줄이 반으로 잘리지 않아요. 문단 하나가 한 장보다 길면 그 안의 줄과 줄 사이에서 잘라요. [안 나눔]이어도 기기 그림 한도를 넘으면 자동으로 나눠요.'),
+        UI.when(cRange('img.maxH', '한 장 높이', 400, 8000, 10, 'px', { hardMax: 40000, help: '완성된 그림의 픽셀' }), () => P.img.split === 'height'),
+        UI.when(cCheck('img.pageNo', '쪽 번호 넣기', '여러 장일 때 아래 가운데에 1/3처럼'), () => P.img.split !== 'auto'),
+        h('p.help', '문단 사이에서 고르게 잘라서 글줄이 반으로 잘리지 않아요. 장마다 위아래 여백과 둥근 모서리를 따로 넣어서 한 장 한 장이 독립된 카드처럼 보이고, 모든 장이 같은 크기로 나와요. [안 나눔]이어도 기기 그림 한도를 넘으면 자동으로 나눠요.'),
         h('div.row', { style: { marginTop: '8px' } }, h('button.btn.pri', { type: 'button', html: ico('image') + '이미지 만들기', onclick: () => makeImages() })),
         prog, progTxt, imgRes,
         h('p.help', '스크롤 상자·접기는 이미지에선 펼쳐서 그려요. 아주 긴 로그를 한 장으로 하려면 선명도를 낮추세요(폰 그림 크기 한도 때문).'))
     );
     updProf();
-    const updInfo = () => { const W = imageWidth(), s = num(P.img.scale, 2); E.imgInfo.textContent = `지금 설정: 폭 ${W}px로 그려서 ${Math.round(W * s)}px 그림이 돼요. 폰에서 볼 때 글자가 작다면 [미리보기 폭대로]나 [폰 400]을 고르세요. (미리보기 막대의 [보는 폭]이 PC면 PC 폭으로 그려져요)`; };
+    const updInfo = () => {
+      const W = imageWidth(), s = num(P.img.scale, 2), I = P.img;
+      const hTxt = I.split === 'height' ? ` · 한 장 높이 ${Math.round(num(I.maxH, 2000))}px` : I.split === 'ratio' ? ` · 한 장 높이 ${Math.round(W * s * (RATIOS[I.ratio] || 16 / 9))}px` : '';
+      E.imgInfo.textContent = `지금 설정: 그림 폭 ${Math.round(W * s)}px${hTxt} (화면 폭 ${W}px × 선명도 ${s}배). 폰에서 볼 때 글자가 작다면 [미리보기 폭대로]나 [폰 400]을 고르세요. (미리보기 막대의 [보는 폭]이 PC면 PC 폭으로 그려져요)`;
+    };
     UI.on('img.', updInfo); UI.on('layout.', updInfo); this.updInfo = updInfo; updInfo();
   }
 };
@@ -3540,21 +3610,26 @@ function insertText(text, how) {
 }
 
 /* ── 텍스트(붙여넣기·TXT) 넣기 ── */
+/* 붙여넣기·TXT: 칸 안의 글을 직접 고치거나 붙여 넣을 수 있음. [정리]는 넣을 때 적용 */
 function openTextImport(raw, source) {
   const o = defaultClean();
   openSheet(source || '본문 넣기', (body, close, foot) => {
-    const pv = h('textarea.code', { readonly: true, style: { minHeight: '150px', whiteSpace: 'pre-wrap' } });
+    const box = h('textarea.code', { spellcheck: false, placeholder: '여기를 길게 눌러 붙여넣기 하세요. 넣기 전에 직접 고쳐도 돼요.', style: { minHeight: '170px', whiteSpace: 'pre-wrap' } });
+    box.value = raw || '';
     const info = h('div.help');
-    const upd = () => { const t = cleanText(raw, o); pv.value = t.slice(0, 4000) + (t.length > 4000 ? '\n…(이하 생략)' : ''); info.textContent = `원래 ${raw.length.toLocaleString()}자 → 정리 후 ${t.length.toLocaleString()}자`; };
-    const ctl = cleanControls(o); ctl.addEventListener('change', upd);
-    body.append(info, pv, h('div.sub-h', '정리'), ctl); upd();
-    const go = how => () => { insertText(cleanText(raw, o), how); close(); toast('본문에 넣었어요 (되돌리기 가능)'); };
+    const upd = () => { const v = box.value; const t = cleanText(v, o); info.textContent = v ? `${v.length.toLocaleString()}자 → 정리하면 ${t.length.toLocaleString()}자` : '아직 비어 있어요.'; };
+    const ctl = cleanControls(o); ctl.addEventListener('change', upd); box.addEventListener('input', debounce(upd, 250));
+    body.append(box, info, h('div.sub-h', '정리 (넣을 때 적용)'), ctl); upd();
+    const go = how => () => { if (!box.value.trim()) { toast('넣을 글이 없어요'); return; } insertText(cleanText(box.value, o), how); close(); toast('본문에 넣었어요 (되돌리기 가능)'); };
     foot.append(h('button.btn', { type: 'button', onclick: go('append') }, '끝에 붙이기'), h('button.btn', { type: 'button', onclick: go('cursor') }, '커서 자리에'), h('button.btn.pri', { type: 'button', onclick: go('replace') }, '본문 바꾸기'));
+    if (!raw) setTimeout(() => box.focus(), 250);
   }, { foot: true });
 }
+/* 클립보드를 읽을 수 있으면 채워서, 못 읽으면(권한 등) 빈 칸으로 열어 직접 붙여 넣게 */
 async function pasteFromClipboard() {
-  try { const t = await navigator.clipboard.readText(); if (!t) { toast('클립보드가 비어 있어요'); return; } openTextImport(t, '붙여넣기'); }
-  catch (e) { toast('클립보드를 읽을 권한이 없어요. 본문 칸을 길게 눌러 붙여넣기 하세요', 'err', 4000); }
+  let t = '';
+  try { t = (navigator.clipboard && navigator.clipboard.readText) ? await navigator.clipboard.readText() : ''; } catch (e) { Log.info('클립보드 읽기 안 됨', e && e.message); }
+  openTextImport(t || '', '붙여넣기');
 }
 async function importTxt() {
   const f = await chooseFile('.txt,.md,text/plain'); if (!f) return;
@@ -3771,56 +3846,72 @@ async function measureForImage(o, W) {
     return { H, cuts: uniq, failed };
   } finally { fr.remove(); }
 }
-/* 나눌 곳 정하기: 문단 경계를 먼저 쓰고, 문단이 너무 길 때만 줄 사이를 씀 */
-function greedySplit(start, H, cuts, maxH) {
-  const segs = [];
-  while (start < H) {
-    if (H - start <= maxH) { segs.push([start, H]); break; }
-    const lim = start + maxH; let best = -1, bestLine = -1;
-    for (const c of cuts) if (c.y > start + 60 && c.y <= lim) { if (c.para) best = c.y; else bestLine = c.y; }
-    // 문단 경계가 너무 위쪽(한도의 절반 미만)이면 줄 사이를 씀
-    let end = best > start + maxH * 0.5 ? best : bestLine > 0 ? bestLine : best > 0 ? best : lim;
-    segs.push([start, end]); start = end;
-  }
-  return segs;
-}
-function planSegments(H, cuts, opt) {
-  const { mode, limitH } = opt;
-  if (mode === 'count' && opt.count > 1) {
-    const n = clamp(Math.round(opt.count), 2, 40); const segs = []; let start = 0;
-    for (let k = 1; k < n; k++) {
-      const t = (H * k) / n; let best = null;
-      for (const c of cuts) {
-        if (c.y <= start + 60 || c.y >= H - 60) continue;
-        const d = Math.abs(c.y - t) * (c.para ? 1 : 1.6);   // 문단 경계를 더 선호
-        if (!best || d < best.d) best = { y: c.y, d };
-      }
-      if (!best) break;
-      segs.push(...greedySplit(start, best.y, cuts, limitH)); start = best.y;
+/* ── 여러 장으로 나누기 ──
+   장마다 [바깥 배경 + 둥근 카드]를 따로 그리고 그 위에 글을 겹쳐서, 장마다 독립된 카드로 보이게 함.
+   O: 바깥 여백(배경을 뺐으면 0), P: 카드 안쪽 위아래 여백 — 가운데 장은 위아래에 P를 새로 넣음 */
+const sliceLimit = (n, i, T, O, P) => T - 2 * O - (i > 0 ? P : 0) - (i < n - 1 ? P : 0);
+function tryPlan(H, cuts, n, T, O, P) {
+  if (n === 1) return H + 2 * O <= T + 0.5 ? [[0, H]] : null;
+  const segs = []; let start = 0;
+  for (let k = 1; k < n; k++) {
+    const hi = start + sliceLimit(n, k - 1, T, O, P), t = (H * k) / n; let best = null;
+    for (const c of cuts) {
+      if (c.y <= start + 40 || c.y > hi || c.y >= H - 20) continue;
+      const d = Math.abs(c.y - t) * (c.para ? 1 : 1.6);   // 문단 사이를 더 좋아함
+      if (!best || d < best.d) best = { y: c.y, d };
     }
-    segs.push(...greedySplit(start, H, cuts, limitH));
-    return segs;
+    const y = best ? best.y : Math.floor(Math.min(hi, H - 1));   // 자를 곳이 전혀 없을 때만(아주 큰 그림 등) 한도에서 자름
+    if (y <= start + 1) return null;
+    segs.push([start, y]); start = y;
   }
-  return greedySplit(0, H, cuts, Math.min(limitH, opt.pieceH || limitH));
+  if (H - start > sliceLimit(n, n - 1, T, O, P) + 0.5) return null;
+  segs.push([start, H]); return segs;
 }
-async function drawSegment(xhtml, W, s, e, scale, fmt, quality) {
-  const hh = e - s;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W * scale)}" height="${Math.round(hh * scale)}" viewBox="0 0 ${W} ${hh}"><foreignObject x="0" y="0" width="${W}" height="${hh}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${W}px;height:${hh}px;overflow:hidden;position:relative;margin:0;padding:0"><div style="position:absolute;left:0;top:${-s}px;width:${W}px">${xhtml}</div></div></foreignObject></svg>`;
+/* 장 수는 최소로, 각 장 분량은 고르게 (마지막 장만 짧게 남지 않게) */
+function planPieces(H, cuts, { mode, count, T, O, P }) {
+  const from = mode === 'count' ? clamp(Math.round(count), 1, 40) : Math.max(1, Math.ceil((H + 2 * O) / T));
+  for (let n = from; n <= from + 200; n++) { const s = tryPlan(H, cuts, n, T, O, P); if (s) return s; }
+  return null;
+}
+async function svgImage(xhtml, w, h, dy, scale) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(w * scale)}" height="${Math.round(h * scale)}" viewBox="0 0 ${w} ${h}"><foreignObject x="0" y="0" width="${w}" height="${h}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${w}px;height:${h}px;overflow:hidden;position:relative;margin:0;padding:0"><div style="position:absolute;left:0;top:${-dy}px;width:${w}px">${xhtml}</div></div></foreignObject></svg>`;
   const img = new Image(); img.decoding = 'sync';
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   await new Promise((ok, no) => { img.onload = ok; img.onerror = () => no(new Error('그림 변환에 실패했어요 (내용이 너무 크거나 브라우저가 거부)')); });
   try { await img.decode(); } catch (e) {}
-  await sleep(60);
-  const cv = document.createElement('canvas'); cv.width = Math.round(W * scale); cv.height = Math.round(hh * scale);
+  await sleep(40);
+  return img;
+}
+/* 한 장 그리기: 틀(배경+카드) → 글 → 쪽 번호 */
+async function drawPiece(job, i) {
+  const { R, W, Wc, Tf, O, pad, n, scale, xhtml, segs } = job; const [a, b] = segs[i]; const I = P.img;
+  const top = i > 0 ? pad : 0;
+  const cv = document.createElement('canvas'); cv.width = Math.round(W * scale); cv.height = Math.round(Tf * scale);
   const g = cv.getContext('2d');
-  if (fmt === 'jpeg') { g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, cv.width, cv.height); }
-  g.drawImage(img, 0, 0, cv.width, cv.height);
-  const mime = fmt === 'jpeg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png';
-  const blob = await new Promise(ok => cv.toBlob(ok, mime, clamp(quality / 100, 0.5, 1)));
+  if (I.fmt === 'jpeg') { g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, cv.width, cv.height); }
+  const F = R.frame;
+  // 바깥 여백이 없으면(카드만) 그림자가 가장자리에서 잘려 얼룩처럼 보여서 뺌
+  const card = { ...F.card(top - a), height: (Tf - 2 * O) + 'px' }; if (!F.O && !F.X) card['box-shadow'] = 'none';
+  const frame = `<div style="${st(R, { ...F.root, width: W + 'px', height: Tf + 'px' })}"><div style="${st(R, card)}"></div></div>`;
+  g.drawImage(await svgImage(toXhtml('', frame), W, Tf, 0, scale), 0, 0, cv.width, cv.height);
+  const hh = b - a;
+  g.drawImage(await svgImage(xhtml, Wc, hh, a, scale), Math.round(((W - Wc) / 2) * scale), Math.round((O + top) * scale), Math.round(Wc * scale), Math.round(hh * scale));
+  if (n > 1 && I.pageNo !== false) {
+    // 아래 가운데에 작고 연하게 (바깥 여백이 넉넉하면 그 안, 아니면 카드 아래 여백 안)
+    const x = Math.round((W / 2) * scale), y = Math.round((O >= 16 ? Tf - O / 2 : Tf - O - Math.max(pad, 16) / 2) * scale);
+    const px = g.getImageData(clamp(x, 0, cv.width - 1), clamp(y, 0, cv.height - 1), 1, 1).data;
+    const lumv = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
+    g.font = `${Math.round(11 * scale)}px system-ui,-apple-system,sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = px[3] < 40 ? 'rgba(120,120,120,.75)' : lumv > 140 ? 'rgba(0,0,0,.36)' : 'rgba(255,255,255,.58)';
+    g.fillText(`${i + 1}/${n}`, x, y);
+  }
+  const mime = I.fmt === 'jpeg' ? 'image/jpeg' : I.fmt === 'webp' ? 'image/webp' : 'image/png';
+  const blob = await new Promise(ok => cv.toBlob(ok, mime, clamp(I.quality / 100, 0.5, 1)));
   const w = cv.width, hgt = cv.height; cv.width = cv.height = 0;
   if (!blob) throw new Error('그림 파일을 만들지 못했어요 (메모리 부족일 수 있어요 — 선명도를 낮춰 보세요)');
   return { blob, w, h: hgt };
 }
+const RATIOS = { '9:16': 16 / 9, '3:4': 4 / 3, '4:5': 5 / 4, '1:1': 1, '2:3': 3 / 2 };
 async function makeImages() {
   const E = OutPanel.el; if (makeImages.busy) return; makeImages.busy = true;
   const setP = (p, t) => { E.prog.hidden = false; E.prog.firstChild.style.width = Math.round(p * 100) + '%'; E.progTxt.textContent = t; };
@@ -3828,29 +3919,40 @@ async function makeImages() {
   const t0 = performance.now();
   try {
     setP(0.04, '글꼴 파일 준비 중…');
-    const o = await buildOutput('image', { onStep: n => setP(0.12, `글꼴 넣는 중: ${n}`) });
-    const W = imageWidth();
+    const o = await buildOutput('image', { bare: true, onStep: n => setP(0.12, `글꼴 넣는 중: ${n}`) });
+    const R = o.R, F = R.frame, L = P.style.layout;
+    const W = imageWidth(); const Wc = Math.min(L.width, W - 2 * F.X);
     setP(0.3, '길이 재는 중…');
-    const m = await measureForImage(o, W);
+    const m = await measureForImage(o, Wc);
     if (m.failed.length) Log.warn('이미지용 글꼴 일부 실패', m.failed.join(', '));
     const lim = canvasLimits(); const scale = num(P.img.scale, 2);
-    const autoMax = Math.floor(Math.min(lim.side / scale, lim.area / (W * scale * scale)));
-    const sp = P.img.split;
-    const RATIOS = { '9:16': 16 / 9, '3:4': 4 / 3, '4:5': 5 / 4, '1:1': 1, '2:3': 3 / 2 };
-    const pieceH = sp === 'height' ? clamp(num(P.img.maxH, 2000) || 2000, 300, 20000) : sp === 'ratio' ? Math.round(W * (RATIOS[P.img.ratio] || 16 / 9)) : 0;
-    const segs = planSegments(m.H, m.cuts, { mode: sp, count: num(P.img.count, 3), pieceH, limitH: autoMax });
-    Log.info(`이미지: 폭 ${W}px · 높이 ${m.H}px · ${segs.length}장 · 배율 ${scale}`, `한 장 최대 ${autoMax}px`);
-    const xhtml = toXhtml(o.css, o.html);
-    for (let i = 0; i < segs.length; i++) {
-      setP(0.35 + 0.6 * (i / segs.length), `그리는 중… ${i + 1} / ${segs.length}장`);
-      const r = await drawSegment(xhtml, W, segs[i][0], segs[i][1], scale, P.img.fmt, P.img.quality);
+    const limit = Math.floor(Math.min(lim.side / scale, lim.area / (W * scale * scale)));   // 한 장 최대 높이 (CSS px)
+    const sp = P.img.split, O = F.O, Pd = F.P; const notes = [];
+    const minT = 2 * O + 2 * Pd + 80;
+    let T = sp === 'height' ? Math.round(clamp(num(P.img.maxH, 2000), 200, 40000) / scale) : sp === 'ratio' ? Math.round(W * (RATIOS[P.img.ratio] || 16 / 9)) : limit;
+    if (T < minT) { notes.push(`한 장 높이가 여백(위아래 바깥·카드 여백)보다 작아서 ${Math.round(minT * scale)}px로 늘렸어요.`); T = minT; }
+    if (T > limit) { notes.push(`한 장 높이가 이 기기의 그림 한도를 넘어서 ${Math.round(limit * scale)}px로 줄였어요.`); T = limit; }
+    const segs = planPieces(m.H, m.cuts, { mode: sp === 'count' ? 'count' : 'fit', count: num(P.img.count, 3), T, O, P: Pd });
+    if (!segs) throw new Error('나눌 곳을 찾지 못했어요. 한 장 높이를 늘려 보세요.');
+    const n = segs.length;
+    const total = (sg, i) => sg[1] - sg[0] + (i > 0 ? Pd : 0) + (i < n - 1 ? Pd : 0) + 2 * O;
+    // 높이·비율로 나눌 땐 모든 장을 정확히 그 높이로, 그 밖에는 가장 긴 장에 맞춰 모두 같은 크기로
+    const Tf = sp === 'height' || sp === 'ratio' ? T : Math.max(...segs.map(total));
+    if (sp === 'count' && n !== Math.round(num(P.img.count, 3))) notes.push(`한 장이 이 기기의 그림 한도를 넘어서 ${n}장으로 늘렸어요.`);
+    Log.info(`이미지: 폭 ${W}px · 글 높이 ${m.H}px · ${n}장 · 한 장 ${Tf}px · 배율 ${scale}`, `한도 ${limit}px`);
+    const job = { R, W, Wc, Tf, O, pad: Pd, n, scale, xhtml: toXhtml(o.css, o.html), segs };
+    for (let i = 0; i < n; i++) {
+      setP(0.35 + 0.6 * (i / n), `그리는 중… ${i + 1} / ${n}장`);
+      const r = await drawPiece(job, i);
       const ext = P.img.fmt === 'jpeg' ? 'jpg' : P.img.fmt;
-      const name = `${safeName(P.meta.title || P.name)}${segs.length > 1 ? '_' + String(i + 1).padStart(2, '0') : ''}.${ext}`;
+      const name = `${safeName(P.meta.title || P.name)}${n > 1 ? '_' + String(i + 1).padStart(2, '0') : ''}.${ext}`;
       imgResults.push({ ...r, name, url: URL.createObjectURL(r.blob) });
     }
-    setP(1, `완료 · ${segs.length}장 · ${((performance.now() - t0) / 1000).toFixed(1)}초`);
-    const why = sp === 'auto' ? (segs.length > 1 ? `전체 높이 ${m.H.toLocaleString()}px가 한 장 한도(${autoMax.toLocaleString()}px)를 넘어서 ${segs.length}장으로 나눴어요. 선명도를 낮추면 장 수가 줄어요.` : '') : `${segs.length}장으로 나눴어요. 문단 사이에서 자르고, 문단 하나가 한 장보다 길 때만 줄과 줄 사이에서 잘라요.`;
-    showImgResults(why, o.warns.filter(w => /글꼴/.test(w)));
+    setP(1, `완료 · ${n}장 · ${((performance.now() - t0) / 1000).toFixed(1)}초`);
+    const px = `${Math.round(W * scale)}×${Math.round(Tf * scale)}px`;
+    const why = n === 1 ? '' : sp === 'auto' ? `전체 길이가 이 기기의 그림 한도를 넘어서 ${n}장(모두 ${px})으로 나눴어요. 선명도를 낮추면 장 수가 줄어요.`
+      : `${n}장으로 나눴어요 (모두 ${px}). 문단 사이에서 고르게 자르고, 장마다 위아래 여백을 넣어 따로따로 카드처럼 보이게 했어요.`;
+    showImgResults([why, ...notes].filter(Boolean).join(' '), o.warns.filter(w => /글꼴/.test(w)));
   } catch (e) {
     setP(0, ''); E.prog.hidden = true;
     E.imgRes.append(h('div.note.err', '이미지를 만들지 못했어요: ' + (e && e.message || e)));
@@ -3863,16 +3965,25 @@ function showImgResults(note, warns) {
   if (warns && warns.length) E.imgRes.append(h('div.note.warn', warns.join(' ')));
   const canShare = f => { try { return navigator.canShare && navigator.canShare({ files: f }); } catch (e) { return false; } };
   const fileOf = r => new File([r.blob], r.name, { type: r.blob.type });
-  const grid = h('div.imgs');
+  const grid = h('div.imgs'); const n = imgResults.length;
   imgResults.forEach((r, i) => grid.append(h('figure', h('a', { href: r.url, target: '_blank', rel: 'noopener' }, h('img', { src: r.url, alt: `${i + 1}번째 이미지` })),
     h('figcaption', h('span', `${i + 1} · ${r.w}×${r.h} · ${fmtBytes(r.blob.size)}`)),
     h('figcaption', h('button.btn', { type: 'button', onclick: () => downloadBlob(r.blob, r.name) }, '저장'), canShare([fileOf(r)]) ? h('button.btn', { type: 'button', onclick: () => navigator.share({ files: [fileOf(r)] }).catch(() => {}) }, '공유') : null))));
   E.imgRes.append(grid);
-  if (imgResults.length > 1) E.imgRes.append(h('div.row', { style: { marginTop: '10px' } },
-    h('button.btn.sm', { type: 'button', onclick: async () => { for (const r of imgResults) { downloadBlob(r.blob, r.name); await sleep(700); } } }, '모두 저장 (차례로)'),
-    h('button.btn.sm', { type: 'button', onclick: async () => downloadBlob(await makeZip(imgResults.map(r => ({ name: r.name, blob: r.blob }))), safeName(P.meta.title || P.name) + '_images.zip') }, 'ZIP 하나로'),
-    canShare(imgResults.map(fileOf)) ? h('button.btn.sm', { type: 'button', onclick: () => navigator.share({ files: imgResults.map(fileOf) }).catch(() => {}) }, '모두 공유') : null));
-  E.imgRes.append(h('p.help', '썸네일을 누르면 새 탭에서 원본 크기로 열려요(길게 눌러 저장도 돼요). 브라우저가 여러 파일 내려받기를 물으면 [허용]을 눌러 주세요.'));
+  if (n > 1) {
+    // 안드로이드 크롬은 한 번 누를 때 파일 하나만 내려받게 함 → 누를 때마다 다음 장
+    let next = 0;
+    const seq = h('button.btn.sm.pri', { type: 'button', onclick: () => {
+      if (next >= n) next = 0;
+      const r = imgResults[next]; downloadBlob(r.blob, r.name); next++;
+      seq.textContent = next >= n ? `${n}장 모두 저장했어요 ✓` : `다음 장 저장 (${next + 1}/${n})`;
+    } }, `차례로 저장 (1/${n})`);
+    E.imgRes.append(h('div.row', { style: { marginTop: '10px' } }, seq,
+      h('button.btn.sm', { type: 'button', onclick: async () => downloadBlob(await makeZip(imgResults.map(r => ({ name: r.name, blob: r.blob }))), safeName(P.meta.title || P.name) + '_images.zip') }, 'ZIP 하나로'),
+      canShare(imgResults.map(fileOf)) ? h('button.btn.sm', { type: 'button', onclick: () => navigator.share({ files: imgResults.map(fileOf) }).catch(() => {}) }, '모두 공유') : null),
+      h('p.help', '폰 브라우저는 한 번 누를 때 파일 하나만 내려받게 해서, [차례로 저장]은 누를 때마다 한 장씩 저장돼요. 한 번에 받으려면 [ZIP 하나로]나 [모두 공유]를 쓰세요.'));
+  }
+  E.imgRes.append(h('p.help', '썸네일을 누르면 새 탭에서 원본 크기로 열려요(길게 눌러 저장도 돼요).'));
 }
 
 /* ── 아주 작은 ZIP 만들기 (압축 없이 묶기만 — 외부 라이브러리 안 씀) ── */
@@ -3989,6 +4100,11 @@ function buildTextPanel(root) {
       h('button.btn.sm', { type: 'button', html: ico('chat') + '실리 채팅', onclick: importST }),
       h('button.btn.sm', { type: 'button', html: ico('broom') + '정리', onclick: openCleanTool }),
       h('button.btn.sm', { type: 'button', onclick: openRules }, icoEl('swap'), '치환', h('span.badge.acc#rulesBadge', { hidden: true })),
+      h('button.btn.sm', { type: 'button', html: ico('trash') + '비우기', onclick: async () => {
+        if (!P.text.trim()) { toast('이미 비어 있어요'); return; }
+        if (!(await confirmBox('본문을 모두 지울까요?\n위쪽 되돌리기(↶)로 다시 살릴 수 있어요.', '비우기', true))) return;
+        insertText('', 'replace'); toast('본문을 비웠어요 (되돌리기 가능)');
+      } }),
       pvBtn),
     buildToolbar(), ta,
     h('div.edfoot', h('span.pn#projName', { title: '지금 로그 (보관함에서 바꾸기)' }), h('span#edStats'), h('span.sp'), h('label.pill', dbIn, '"대사" 줄바꿈'))
@@ -4024,6 +4140,26 @@ async function openProject(id) {
   if (APPST.tab === 'more') MorePanel.refresh();
   await DB.setkv('lastProject', P.id);
 }
+/* 폰 키보드: 화면 높이가 확 줄고 글 칸에 커서가 있으면 키보드가 올라온 것으로 보고 html.kb를 붙임.
+   overflow:hidden 상자 안에서 브라우저가 커서 쪽으로 밀어 올린 뒤 위로 못 돌아오는 문제도 함께 막음 */
+function initKeyboardWatch() {
+  const root = document.documentElement; let base = window.innerHeight, baseW = window.innerWidth;
+  const typing = () => { const a = document.activeElement; return !!a && (a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && !/^(checkbox|radio|range|color|button|file)$/.test(a.type))); };
+  const check = () => {
+    const w = window.innerWidth, hgt = window.visualViewport ? Math.min(window.innerHeight, window.visualViewport.height) : window.innerHeight;
+    if (w !== baseW) { baseW = w; base = hgt; }   // 화면을 돌렸으면 기준 다시
+    if (!typing() && hgt > base) base = hgt;
+    const on = typing() && hgt < base * 0.78;
+    if (on !== root.classList.contains('kb')) {
+      root.classList.toggle('kb', on);
+      requestAnimationFrame(() => { const p = $('#panel'); if (p && APPST.tab === 'text') p.scrollTop = 0; PV.layout(); if (on && document.activeElement === Ed.ta) Ed.scrollToSel(); });
+    }
+  };
+  (window.visualViewport || window).addEventListener('resize', check);
+  window.addEventListener('resize', check);
+  document.addEventListener('focusin', () => setTimeout(check, 350));
+  document.addEventListener('focusout', () => setTimeout(check, 120));
+}
 async function init() {
   await DB.open();
   const prefs = await DB.kv('prefs', null); if (isObj(prefs)) APPST.prefs = deepMerge(APPST.prefs, prefs);
@@ -4054,7 +4190,8 @@ async function init() {
   mini('#pvWidth', 'pvW', () => { PV.layout(); OutPanel.updInfo && OutPanel.updInfo(); }); mini('#pvBg', 'pvBg', () => PV.applyBg());
   initGrip(); PV.init();
   switchTab(APPST.prefs.lastTab && PANES[APPST.prefs.lastTab] ? APPST.prefs.lastTab : 'text');
-  window.addEventListener('resize', debounce(() => setPvSize(APPST.prefs.pv[APPST.tab] || 'm', false), 200));
+  window.addEventListener('resize', debounce(() => { if (!document.documentElement.classList.contains('kb')) setPvSize(APPST.prefs.pv[APPST.tab] || 'm', false); }, 200));
+  initKeyboardWatch();
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { Hist.flush(); saveNow(); } });
   window.addEventListener('pagehide', () => { saveNow(); });
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().then(ok => Log.info('영구 저장 요청', ok ? '허용됨' : '브라우저가 보류')); } catch (e) {}

@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#F5F2EC">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <title>로꾸방</title>
+<script>/* 앱 화면 테마를 그리기 전에 먼저 (깜빡임 방지) */try{var t=localStorage.getItem('la-ui-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23B4472F'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23fff' font-family='serif'%3E%EB%A1%9C%3C/text%3E%3C/svg%3E">
 <style>
 :root{
@@ -13,7 +14,8 @@
   --ink:#24221F; --ink-2:#57524A; --muted:#8C867B; --faint:#B5AEA2;
   --line:#E4DED3; --line-2:#EFEAE2;
   --accent:#B4472F; --accent-ink:#8E3522; --accent-soft:#F7E6E0;
-  --ok:#3E7A58; --ok-soft:#E3F0E8; --warn:#9A6514; --warn-soft:#FAF0DC; --danger:#B23A2A;
+  --ok:#3E7A58; --ok-soft:#E3F0E8; --warn:#9A6514; --warn-soft:#FAF0DC; --danger:#B23A2A; --danger-soft:#F8E3E0; --danger-line:#EBC9C3;
+  --pv-bg:#E7E2D9; --focus:#CDB8A8; --toggle-off:#D6CFC3; --code-bg:#FBFAF7; --inv:#24221F; --inv-ink:#FFFFFF; --on-accent:#FFFFFF;
   --r:14px; --r-sm:10px;
   --topH:52px; --tabH:58px;
   --f-ui:system-ui,-apple-system,'Segoe UI','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
@@ -21,6 +23,30 @@
   --f-mono:ui-monospace,'D2Coding','Nanum Gothic Coding',Menlo,Consolas,monospace;
   --shadow:0 1px 2px rgba(36,34,31,.05),0 6px 20px rgba(36,34,31,.06);
   color-scheme:light;
+}
+/* 앱 화면 다크 모드 — 로꾸방 화면만 바뀜 (미리보기 안의 로그 색·사이트 바탕 흉내는 그대로).
+   '자동'은 기기 설정을 따르고, 보관함·위쪽 버튼에서 밝게/어둡게를 고르면 data-theme으로 고정 */
+:root[data-theme="dark"]{
+  --bg:#191816; --bg-2:#26231F; --surface:#211F1C; --surface-2:#1D1B19;
+  --ink:#ECE7DE; --ink-2:#C4BDB1; --muted:#968E82; --faint:#6E675E;
+  --line:#36322D; --line-2:#2B2825;
+  --accent:#D86E52; --accent-ink:#F0A188; --accent-soft:#3B2620;
+  --ok:#7CC497; --ok-soft:#1D3226; --warn:#E2B464; --warn-soft:#382D18; --danger:#F07C6A; --danger-soft:#3C201C; --danger-line:#5A2E27;
+  --pv-bg:#2A2724; --focus:#8C5E4C; --toggle-off:#4A453F; --code-bg:#1A1917; --inv:#ECE7DE; --inv-ink:#1B1A18; --on-accent:#1B1A18;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#191816; --bg-2:#26231F; --surface:#211F1C; --surface-2:#1D1B19;
+    --ink:#ECE7DE; --ink-2:#C4BDB1; --muted:#968E82; --faint:#6E675E;
+    --line:#36322D; --line-2:#2B2825;
+    --accent:#D86E52; --accent-ink:#F0A188; --accent-soft:#3B2620;
+    --ok:#7CC497; --ok-soft:#1D3226; --warn:#E2B464; --warn-soft:#382D18; --danger:#F07C6A; --danger-soft:#3C201C; --danger-line:#5A2E27;
+    --pv-bg:#2A2724; --focus:#8C5E4C; --toggle-off:#4A453F; --code-bg:#1A1917; --inv:#ECE7DE; --inv-ink:#1B1A18; --on-accent:#1B1A18;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink)}
@@ -45,7 +71,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .savedot.err{background:var(--danger)}
 
 .work{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
-.pv{flex:none;height:var(--pvh,38vh);display:flex;flex-direction:column;background:#E7E2D9;border-bottom:1px solid var(--line);min-height:0;transition:height .18s ease}
+.pv{flex:none;height:var(--pvh,38vh);display:flex;flex-direction:column;background:var(--pv-bg);border-bottom:1px solid var(--line);min-height:0;transition:height .18s ease}
 .pv.hide{height:0;border:0;overflow:hidden}
 .pv.full{flex:1;height:auto}
 .pvbar{flex:none;display:flex;align-items:center;gap:6px;padding:6px 8px;overflow-x:auto;scrollbar-width:none}
@@ -57,13 +83,13 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .mini .mlab{align-self:center;font-size:10.5px;color:var(--muted);padding:0 4px 0 8px;white-space:nowrap;letter-spacing:.02em}
 .pvhelp{width:28px;height:28px;justify-content:center;align-items:center;font-size:13px;color:var(--ink-2);padding:0}
 .pv.full ~ .panel{display:none}
-.pvback{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:0;border-radius:99px;background:var(--ink);color:#fff;padding:9px 16px;font-size:13px;box-shadow:var(--shadow)}
+.pvback{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;border:0;border-radius:99px;background:var(--inv);color:var(--inv-ink);padding:9px 16px;font-size:13px;box-shadow:var(--shadow)}
 .pvbox{flex:1;min-height:0;position:relative;overflow:hidden}
 .pvscale{position:absolute;left:0;top:0;transform-origin:0 0}
 .pvbox iframe{display:block;border:0;width:100%;height:100%;background:#fff}
-.pvchip{position:absolute;right:10px;bottom:10px;z-index:3;border:0;border-radius:99px;background:var(--ink);color:#fff;padding:8px 14px;font-size:13px;box-shadow:var(--shadow);display:flex;gap:6px;align-items:center}
+.pvchip{position:absolute;right:10px;bottom:10px;z-index:3;border:0;border-radius:99px;background:var(--inv);color:var(--inv-ink);padding:8px 14px;font-size:13px;box-shadow:var(--shadow);display:flex;gap:6px;align-items:center}
 .grip{flex:none;height:14px;margin-top:-7px;margin-bottom:-7px;position:relative;z-index:4;touch-action:none;cursor:row-resize;display:grid;place-items:center}
-.grip::after{content:"";width:44px;height:5px;border-radius:9px;background:#CFC7B9}
+.grip::after{content:"";width:44px;height:5px;border-radius:9px;background:var(--faint)}
 .pv.hide + .grip,.pv.full + .grip{display:none}
 
 .panel{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px calc(24px + env(safe-area-inset-bottom))}
@@ -83,13 +109,23 @@ html.kb #ed{min-height:60px}
 .tab.on{color:var(--accent)}
 .tab.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:2px;border-radius:0 0 3px 3px;background:var(--accent)}
 
+.vgrip{display:none}
+/* PC: 왼쪽 작업창(오른쪽 경계를 끌어 폭 조절) + 그 아래 탭 / 오른쪽은 위아래 끝까지 미리보기 */
 @media (min-width:980px){
-  .work{display:grid;grid-template-columns:minmax(380px,460px) 1fr;grid-template-rows:1fr}
+  .app{display:grid;grid-template-rows:auto minmax(0,1fr)}
+  .work{display:grid;grid-template-columns:var(--panelW,420px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
   .panel{grid-column:1;grid-row:1;border-right:1px solid var(--line)}
-  .pv,.pv.hide,.pv.full{grid-column:2;grid-row:1;height:auto!important;border:0;overflow:visible}
+  .tabs{grid-column:1;grid-row:2;border-right:1px solid var(--line)}
+  .pv,.pv.hide,.pv.full{grid-column:2;grid-row:1 / 3;height:auto!important;border:0;overflow:visible}
   .grip,.pvsize,.mob,.pvback{display:none!important}
-  .pv.full ~ .panel{display:block}
-  .app{display:grid;grid-template-rows:auto 1fr auto}
+  .pv.full ~ .panel{display:block} .pv.full ~ .panel.ed{display:flex}
+  .vgrip{display:block;position:absolute;top:0;bottom:0;left:calc(var(--panelW,420px) - 6px);width:12px;cursor:col-resize;z-index:6;touch-action:none;outline:none}
+  .vgrip::after{content:"";position:absolute;top:0;bottom:0;left:5px;width:2px;background:transparent;transition:background .15s}
+  .vgrip::before{content:"";position:absolute;top:50%;left:3px;width:6px;height:44px;margin-top:-22px;border-radius:9px;background:var(--faint);opacity:.55;transition:opacity .15s}
+  .vgrip:hover::after,.vgrip:focus-visible::after,.app.resizing .vgrip::after{background:var(--accent)}
+  .vgrip:hover::before,.app.resizing .vgrip::before{opacity:0}
+  .app.resizing{cursor:col-resize;user-select:none}
+  .app.resizing iframe{pointer-events:none}
 }
 
 /* ── 공통 요소 ── */
@@ -101,14 +137,14 @@ html.kb #ed{min-height:60px}
 .note{border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;line-height:1.6;margin:8px 0;background:var(--bg);color:var(--ink-2)}
 .note.warn{background:var(--warn-soft);color:var(--warn)}
 .note.ok{background:var(--ok-soft);color:var(--ok)}
-.note.err{background:#F8E3E0;color:var(--danger)}
+.note.err{background:var(--danger-soft);color:var(--danger)}
 .note ul{margin:4px 0 0;padding-left:18px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13.5px;white-space:nowrap}
 .btn:active{background:var(--bg-2)}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.pri:active{background:var(--accent-ink)}
 .btn.ghost{background:none}
-.btn.warn{color:var(--danger);border-color:#EBC9C3}
+.btn.warn{color:var(--danger);border-color:var(--danger-line)}
 .btn.sm{min-height:34px;padding:5px 11px;font-size:12.5px;border-radius:10px}
 .btn.full{width:100%}
 .btn[disabled]{opacity:.45;pointer-events:none}
@@ -118,12 +154,12 @@ html.kb #ed{min-height:60px}
 .grow{flex:1;min-width:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 input[type=text],input[type=url],input[type=number],input[type=search],input[type=password],select,textarea.in{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px;min-height:40px;outline:none}
-input:focus,select:focus,textarea:focus{border-color:#CDB8A8;box-shadow:0 0 0 3px rgba(180,71,47,.10)}
+input:focus,select:focus,textarea:focus{border-color:var(--focus);box-shadow:0 0 0 3px rgba(180,71,47,.10)}
 textarea.in{resize:vertical;line-height:1.55}
 .mono{font-family:var(--f-mono);font-size:12.5px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font-size:12.5px;color:var(--ink-2);white-space:nowrap}
-.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.on{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
 .chip:active{transform:scale(.97)}
 .badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--bg-2);color:var(--ink-2);font-weight:500;vertical-align:1px}
 .badge.acc{background:var(--accent-soft);color:var(--accent-ink)}
@@ -172,7 +208,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1);font-weight:600}
 .tg{position:relative;width:42px;height:24px;flex:none}
 .tg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;z-index:1}
-.tg span{position:absolute;inset:0;border-radius:99px;background:#D6CFC3;transition:background .15s}
+.tg span{position:absolute;inset:0;border-radius:99px;background:var(--toggle-off);transition:background .15s}
 .tg span::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
 .tg input:checked+span{background:var(--accent)}
 .tg input:checked+span::after{transform:translateX(18px)}
@@ -199,7 +235,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
 .tb .hlb i{display:block;width:16px;height:12px;border-radius:3px}
 .tb .lbl{font-size:12.5px;white-space:nowrap}
 #ed{flex:1;min-height:120px;width:100%;resize:none;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:var(--surface);font-size:var(--edfs,15px);line-height:1.7;outline:none;font-family:var(--f-ui);white-space:pre-wrap;overflow-wrap:anywhere}
-#ed:focus{border-color:#CDB8A8}
+#ed:focus{border-color:var(--focus)}
 .edfoot{flex:none;display:flex;gap:10px;align-items:center;font-size:11.5px;color:var(--muted);padding:6px 2px 0;flex-wrap:wrap}
 .edfoot .sp{flex:1}
 .edfoot .pn{color:var(--ink-2);font-weight:600;max-width:40vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -217,9 +253,9 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
 .sheet .sb{flex:1;min-height:0;overflow-y:auto;padding:14px 14px calc(18px + env(safe-area-inset-bottom));overscroll-behavior:contain}
 .sheet .sf{flex:none;padding:10px 14px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:8px;background:var(--surface-2)}
 .sheet .sf .btn{flex:1}
-.toast{position:fixed;left:50%;bottom:calc(var(--tabH) + 18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;z-index:80;opacity:0;transition:all .2s;pointer-events:none;max-width:88vw;text-align:center;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:calc(var(--tabH) + 18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--inv);color:var(--inv-ink);padding:10px 16px;border-radius:12px;font-size:13px;z-index:80;opacity:0;transition:all .2s;pointer-events:none;max-width:88vw;text-align:center;line-height:1.5}
 .toast.on{opacity:1;transform:translateX(-50%)}
-.toast.err{background:var(--danger)}
+.toast.err{background:var(--danger);color:#fff}
 .pop{position:fixed;z-index:60;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.16);padding:10px;max-width:calc(100vw - 20px)}
 
 /* ── 글꼴 고르기 ── */
@@ -272,7 +308,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
 .avth{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface) center/cover no-repeat;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--faint);flex:none}
 .bgp{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:8px}
 .bgp button{height:56px;border-radius:10px;border:1px solid var(--line);padding:0;position:relative;overflow:hidden}
-.bgp button span{position:absolute;left:0;right:0;bottom:0;font-size:10.5px;background:rgba(255,255,255,.82);color:var(--ink-2);padding:1px 0;text-align:center}
+.bgp button span{position:absolute;left:0;right:0;bottom:0;font-size:10.5px;background:rgba(255,255,255,.82);color:#57524A;padding:1px 0;text-align:center}
 .bgp button.on{outline:2px solid var(--accent);outline-offset:1px}
 .hrp{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}
 .hrp button{height:46px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:12px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 6px}
@@ -281,17 +317,17 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
 .roles .chip{font-size:12px;padding:5px 10px}
 .roles .chip.off{text-decoration:line-through;opacity:.6}
 .hlset{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-.hlset button{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:8px 6px;font-size:12.5px}
+.hlset button{border:1px solid var(--line);border-radius:10px;background:#FFFDF8;color:#3A3530;padding:8px 6px;font-size:12.5px}   /* 형광펜 견본은 앱 테마와 상관없이 종이 위 글자로 */
 .hlset button.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
-.code{width:100%;min-height:180px;font-family:var(--f-mono);font-size:11.5px;line-height:1.5;border:1px solid var(--line);border-radius:10px;padding:10px;background:#FBFAF7;white-space:pre;overflow:auto}
+.code{width:100%;min-height:180px;font-family:var(--f-mono);font-size:11.5px;line-height:1.5;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--code-bg);white-space:pre;overflow:auto}
 .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px}
 .imgs figure{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
-.imgs img{display:block;width:100%;height:150px;object-fit:cover;object-position:top;background:#eee}
+.imgs img{display:block;width:100%;height:150px;object-fit:cover;object-position:top;background:var(--bg-2)}
 .imgs figcaption{display:flex;gap:4px;padding:6px;font-size:11px;color:var(--muted);align-items:center}
 .imgs figcaption .btn{flex:1;min-height:30px;font-size:11.5px;padding:3px 6px}
 .prog{height:6px;border-radius:9px;background:var(--bg-2);overflow:hidden;margin:10px 0 4px}
 .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
-.logbox{font-family:var(--f-mono);font-size:11.5px;line-height:1.5;background:#FBFAF7;border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-height:46vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.logbox{font-family:var(--f-mono);font-size:11.5px;line-height:1.5;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-height:46vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
 .logbox .e{color:var(--danger)} .logbox .w{color:var(--warn)}
 .cheat{font-size:12.5px;line-height:1.6}
 .cheat table{width:100%;border-collapse:collapse}
@@ -309,6 +345,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
     <div class="acts">
       <button class="ib" id="btnUndo" type="button" title="되돌리기" aria-label="되돌리기"><svg class="i" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
       <button class="ib" id="btnRedo" type="button" title="다시 하기" aria-label="다시 하기"><svg class="i" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+      <button class="ib" id="btnTheme" type="button" title="화면 테마" aria-label="화면 테마"></button>
       <span class="savedot" id="saveDot" title="저장 상태"></span>
     </div>
   </header>
@@ -328,13 +365,14 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
     </section>
     <div class="grip" id="grip" aria-hidden="true"></div>
     <main class="panel" id="panel"></main>
-  </div>
+    <div class="vgrip" id="vgrip" role="separator" aria-orientation="vertical" aria-label="작업창 폭 (끌거나 ← → 키, 두 번 누르면 기본 폭)" title="끌어서 작업창 폭 조절 · 두 번 누르면 기본 폭" tabindex="0"></div>
   <nav class="tabs" id="tabs">
     <button class="tab on" data-tab="text" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>본문</button>
     <button class="tab" data-tab="design" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.5-1.9-.4-1.2.4-2.3 1.7-2.3H17a4 4 0 0 0 4-4c0-5-4-9.8-9-9.8z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>꾸미기</button>
     <button class="tab" data-tab="out" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>내보내기</button>
     <button class="tab" data-tab="more" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>보관함</button>
   </nav>
+  </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -344,7 +382,7 @@ details.sec>.body{padding:2px 14px 14px;border-top:1px solid var(--line-2)}
    (내부 저장소 이름·파일 형식 표시는 예전 이름 log-atelier 그대로 — 저장된 로그를 이어 쓰기 위해)
    모든 작업은 이 브라우저 안에서만 처리됨 (서버 없음)
    ═══════════════════════════════════════════════════════════ */
-const APP_VER = '1.5.0';
+const APP_VER = '1.7.0';
 const DB_NAME = 'log-atelier';
 
 /* ── 작은 도구들 ── */
@@ -395,7 +433,9 @@ const ICON = {
   share: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4"/>',
   code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>', info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
   paste: '<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/>', bug: '<rect x="7" y="8" width="10" height="12" rx="5"/><path d="M12 8V5M4 13h3M17 13h3M5 8l2.5 2M19 8l-2.5 2M5 19l2.5-2M19 19l-2.5-2"/>',
-  edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/>', eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>', halfmoon: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>'
 };
 const ico = (name, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24">${ICON[name] || ''}</svg>`;
 const icoEl = name => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('class', 'i'); s.setAttribute('viewBox', '0 0 24 24'); s.innerHTML = ICON[name] || ''; return s; };
@@ -460,6 +500,8 @@ const INLINE_ROLES = [
   ['dq', '큰따옴표 “대사”'], ['sq', "작은따옴표 ‘생각’"], ['em', '*별표* 행동·강조'], ['strong', '**두 별표** 굵게'],
   ['emstrong', '***세 별표***'], ['strike', '~~물결~~ 취소선'], ['code', '`백틱` 코드'], ['corner', '「낫표」'], ['dcorner', '『겹낫표』']
 ];
+/* 지문: 기호 없이 쓴 평문 — 비워 둔 값은 본문 글자를 따르고, 바꿔도 다른 글자 요소에는 번지지 않음 */
+const NARR_ROLE = ['narr', '지문 (평문)'];
 const BLOCK_ROLES = [['h1', '# 큰 제목'], ['h2', '## 중간 제목'], ['h3', '### 작은 제목'], ['quote', '> 인용구'], ['codeblock', '``` 코드 블록'], ['label', '[msg] 화자 이름']];
 const BOX_KINDS = [['letter', '편지'], ['memo', '쪽지'], ['system', '시스템'], ['flashback', '회상'], ['note', '메모 상자']];
 
@@ -480,6 +522,7 @@ function DEFAULT_STYLE() {
       dialogBreak: false, dialogBreakCorner: false
     },
     roles: {
+      narr: { on: true, color: '', font: '', weight: 0, italic: false, size: 100, ls: 0 },
       dq: ir({ color: '#2F4A6B' }), sq: ir({ color: '#76688A' }), em: ir({ color: '#8F8172' }), strong: ir({ weight: 700 }),
       emstrong: ir({ weight: 700, italic: true }), strike: ir({ color: '#9A9187' }), code: ir({ color: '#6B4F3A', hl: '#F1ECE3', hlStyle: 'full' }),
       corner: ir({ color: '#5E6F55' }), dcorner: ir({ color: '#7A5A3A', weight: 600 }),
@@ -522,9 +565,14 @@ function DEFAULT_STYLE() {
     custom: { css: '' }
   };
 }
-/* 테마를 바꿔도 사용자가 정한 '구조' 값은 유지 */
+/* 테마를 바꿔도 사용자가 정한 '구조' 값은 유지.
+   메신저는 모양·배치(나누기·이름·프로필·둥글기 등)만 유지하고, 말풍선 '색'은 테마를 따라감 (어두운 테마에 밝은 말풍선이 남지 않게) */
+const MSGR_COLOR_KEYS = ['lBg', 'lColor', 'lBorder', 'rBg', 'rColor', 'rBorder', 'cColor', 'cBg', 'nameColor'];
 const KEEP_ON_THEME = ['layout.mode', 'layout.scrollH', 'layout.scrollFixed', 'layout.titleOutside', 'layout.foldLabel', 'layout.foldOpen', 'layout.template',
-  'text.lineMode', 'text.dialogBreak', 'text.dialogBreakCorner', 'text.blankGap', 'end.text', 'custom.css', 'speakers', 'msgr', 'bg.target'];
+  'text.lineMode', 'text.dialogBreak', 'text.dialogBreakCorner', 'text.blankGap', 'end.text', 'custom.css', 'speakers', 'bg.target',
+  ...Object.keys(DEFAULT_STYLE().msgr).filter(k => !MSGR_COLOR_KEYS.includes(k)).map(k => 'msgr.' + k)];
+/* [기본값으로]도 되돌리지 않는 값: 글 해석(줄바꿈·대사 줄바꿈)·틀 구조·직접 쓴 문구 — 모양만 되돌림 */
+const KEEP_ON_RESET = KEEP_ON_THEME.filter(p => !p.startsWith('msgr.') && p !== 'speakers' && p !== 'custom.css');
 
 function DEFAULT_OUT() {
   return { profile: 'kkangtong', important: true, guard: true, compact: false, pvSite: true, siteSub: true, fontMode: 'auto', pretty: true, form: 'snippet', withBg: true,
@@ -577,13 +625,15 @@ const THEMES = [
     cover: { titleColor: '#F3EAD6', subColor: '#A8AFC6', kickerColor: '#E2B868', metaColor: '#8C93AD', ornColor: '#56628A', ornGlyph: '✦', cwBg: '#262D47', cwColor: '#E8C48A' },
     fold: { color: '#D8D2C4', bg: '#22293F', border: '#3A4466' }, end: { color: '#7D86A6' },
     boxes: { letter: { bg: '#2A2F45', border: '#4A5578', color: '#E6DDC8' }, memo: { bg: '#3A3424', border: '#6B5E36', color: '#F2E3B0' }, system: { bg: '#20263A', border: '#7F8EB5', color: '#B9C4E0' },
-      flashback: { border: '#4A5578', color: '#9BA3BC' }, note: { bg: '#262A40', border: '#5A5A8A', color: '#CFC8EA' } } } },
+      flashback: { border: '#4A5578', color: '#9BA3BC' }, note: { bg: '#262A40', border: '#5A5A8A', color: '#CFC8EA' } },
+    msgr: { lBg: '#262D47', lBorder: '#343C5C', rBg: '#3A4672', cBg: '#22293F', cColor: '#8C93AD' } } },
   { id: 'letter', n: '편지지', s: {
     bg: { type: 'solid', color: '#E8E1D3' }, card: { color: '#FDFBF4', pattern: 'lined', patternColor: '#D3DEEC' },
     layout: { radius: 3, borderColor: '#E3D9C5', shadow: 'lifted' }, text: { font: 'gowun-batang', size: 16, lh: 2, color: '#3B3A47' },
     roles: { dq: { color: '#2E4F7E' }, sq: { color: '#7A6597' }, em: { color: '#8B7F6E' } },
     hr: { kind: 'glyph', glyph: '· · ·', color: '#A9B5C8', size: 16 },
-    cover: { titleFont: 'kyobo-2019', titleSize: 30, titleWeight: 400, titleColor: '#2E3D5C', orn: 'none' } } },
+    cover: { titleFont: 'kyobo-2019', titleSize: 30, titleWeight: 400, titleColor: '#2E3D5C', orn: 'none' },
+    msgr: { lBg: '#FFFFFF', lBorder: '#E3D9C5', rBg: '#E4ECF6', cBg: '#EFE9DC', cColor: '#8B8577' } } },
   { id: 'minimal', n: '모던 미니멀', s: {
     bg: { type: 'solid', color: '#F3F3F1' }, card: { color: '#FFFFFF' },
     layout: { border: false, shadow: 'soft', radius: 16, padY: 36, padX: 28 }, text: { font: 'pretendard', size: 15.5, lh: 1.85, color: '#2A2A2A', ls: -0.01 },
@@ -591,13 +641,15 @@ const THEMES = [
       h1: { font: 'pretendard', align: 'left', color: '#111' }, h2: { font: 'pretendard', color: '#111' }, h3: { font: 'pretendard', color: '#222' },
       quote: { bg: '#F6F6F4', bar: '#222222', color: '#444' }, label: { color: '#9A9A9A', font: 'pretendard' } },
     hr: { kind: 'line', color: '#E4E4E1', width: 100, thick: 1 },
-    cover: { align: 'left', titleFont: 'pretendard', titleSize: 28, titleColor: '#111', kickerColor: '#999', subColor: '#777', orn: 'line', ornColor: '#E4E4E1' } } },
+    cover: { align: 'left', titleFont: 'pretendard', titleSize: 28, titleColor: '#111', kickerColor: '#999', subColor: '#777', orn: 'line', ornColor: '#E4E4E1' },
+    msgr: { lBg: '#F2F2F0', lBorder: '', rBg: '#E4E4E0', cBg: '#F2F2F0', cColor: '#9A9A9A' } } },
   { id: 'pastel', n: '파스텔 다이어리', s: {
     bg: { type: 'gradient', g1: '#FDE7EF', g2: '#E7E3FB', g3: '', angle: 150 }, card: { color: '#FFFAFC', alpha: 92 },
     layout: { radius: 22, borderColor: '#F3D9E4', shadow: 'soft' }, text: { font: 'gowun-dodum', size: 15.5, lh: 1.9, color: '#4E4350' },
     roles: { dq: { color: '#C0587E' }, sq: { color: '#7D6BB5' }, em: { color: '#A88AA0' }, h1: { font: 'gowun-dodum', color: '#B04F74' }, quote: { bg: '#FBEFF4', bar: '#F0BFD2' }, label: { color: '#C995AE' } },
     hr: { kind: 'glyph', glyph: '♡ ♡ ♡', color: '#E9A9C2', size: 12 },
-    cover: { titleFont: 'gowun-dodum', titleColor: '#B04F74', kickerColor: '#9C84C9', ornGlyph: '✿', ornColor: '#E9A9C2' } } },
+    cover: { titleFont: 'gowun-dodum', titleColor: '#B04F74', kickerColor: '#9C84C9', ornGlyph: '✿', ornColor: '#E9A9C2' },
+    msgr: { lBg: '#FFFFFF', lBorder: '#F3D9E4', rBg: '#F8D9E6', cBg: '#FBEFF4', cColor: '#B58AA0' } } },
   { id: 'noir', n: '누아르', s: {
     bg: { type: 'solid', color: '#0D0D0E' }, card: { color: '#141415' },
     layout: { borderColor: '#2A2A2C', shadow: 'none', radius: 2 }, text: { font: 'noto-serif', size: 15.5, color: '#CFCFCF', lh: 1.95 },
@@ -608,15 +660,18 @@ const THEMES = [
     cover: { titleFont: 'noto-serif', titleColor: '#F5F5F5', subColor: '#8A8A8A', kickerColor: '#C8352C', metaColor: '#777', orn: 'line', ornColor: '#3A3A3D', cwBg: '#1E1E20', cwColor: '#E07A6F' },
     fold: { color: '#CFCFCF', bg: '#1B1B1D', border: '#2E2E31' }, end: { color: '#666' },
     boxes: { letter: { bg: '#1D1C1A', border: '#3A3833', color: '#D8D2C4' }, memo: { bg: '#24221A', border: '#4A4430', color: '#E5DCB8' }, system: { bg: '#18191C', border: '#7A7F8A', color: '#B5BAC4' },
-      flashback: { border: '#3A3A3D', color: '#8E8E8E' }, note: { bg: '#1A1A20', border: '#44445A', color: '#C9C9DA' } } } },
+      flashback: { border: '#3A3A3D', color: '#8E8E8E' }, note: { bg: '#1A1A20', border: '#44445A', color: '#C9C9DA' } },
+    msgr: { lBg: '#1F1F21', lBorder: '#2E2E31', rBg: '#3A2321', cBg: '#1B1B1D', cColor: '#8A8A8A' } } },
   { id: 'forest', n: '숲', s: {
     bg: { type: 'preset', preset: 'forest' }, card: { color: '#FBFDF8' }, layout: { borderColor: '#D9E4D3' },
     text: { font: 'maruburi', color: '#2F3A2F' }, roles: { dq: { color: '#3F6B4F' }, sq: { color: '#6F6A8E' }, em: { color: '#7C8A73' }, quote: { bg: '#F1F6EE', bar: '#B9CDB0' }, label: { color: '#7C9A6E' } },
-    hr: { kind: 'glyph-line', glyph: '❦', color: '#A9BFA0' }, cover: { titleColor: '#2E4A36', kickerColor: '#5E8A64', ornColor: '#A9BFA0' } } },
+    hr: { kind: 'glyph-line', glyph: '❦', color: '#A9BFA0' }, cover: { titleColor: '#2E4A36', kickerColor: '#5E8A64', ornColor: '#A9BFA0' },
+    msgr: { lBg: '#FFFFFF', lBorder: '#D9E4D3', rBg: '#DCEAD4', cBg: '#EAF1E6', cColor: '#7C8A73' } } },
   { id: 'ocean', n: '바다', s: {
     bg: { type: 'preset', preset: 'sea' }, card: { color: '#FBFDFF' }, layout: { borderColor: '#D3E0EE', radius: 12 },
     text: { font: 'kopub-batang', color: '#23324A' }, roles: { dq: { color: '#1F5F99' }, sq: { color: '#5D6C9E' }, em: { color: '#6F8299' }, quote: { bg: '#EEF4FA', bar: '#AFC6DE' }, label: { color: '#6F8FB5' } },
-    hr: { kind: 'fade', color: '#9DB7D3', width: 70 }, cover: { titleColor: '#1D3A5C', kickerColor: '#3E7CB8', ornColor: '#9DB7D3' } } }
+    hr: { kind: 'fade', color: '#9DB7D3', width: 70 }, cover: { titleColor: '#1D3A5C', kickerColor: '#3E7CB8', ornColor: '#9DB7D3' },
+    msgr: { lBg: '#FFFFFF', lBorder: '#D3E0EE', rBg: '#D8E7F6', cBg: '#E8F0F8', cColor: '#6F8299' } } }
 ];
 
 /* ── 값 정리 (불러온 데이터가 이상해도 앱이 깨지지 않게) ── */
@@ -653,7 +708,7 @@ function normalizeStyle(st) {
   M.size = clamp(num(M.size, 100), 60, 160); M.lh = clamp(num(M.lh, 1.65), 1, 3); M.nameSize = clamp(num(M.nameSize, 80), 50, 140); M.gap = clamp(num(M.gap, 4), 0, 60); M.runGap = clamp(num(M.runGap, 16), 0, 120);
   const seenSp = new Set(); const str = v => (typeof v === 'string' ? v : '');
   s.speakers = (Array.isArray(st && st.speakers) ? st.speakers : []).filter(x => isObj(x) && typeof x.name === 'string' && x.name.trim()).slice(0, 60)
-    .map(x => ({ name: x.name.trim().slice(0, 60), dq: str(x.dq), sq: str(x.sq), label: str(x.label), font: str(x.font), bold: !!x.bold,
+    .map(x => ({ name: x.name.trim().slice(0, 60), dq: str(x.dq), sq: str(x.sq), narr: str(x.narr), label: str(x.label), font: str(x.font), bold: !!x.bold,
       side: ['left', 'right', 'center'].includes(x.side) ? x.side : 'left', bubble: str(x.bubble), btext: str(x.btext), bfont: str(x.bfont), avatar: str(x.avatar).slice(0, 2000) }))
     .filter(x => !seenSp.has(x.name) && seenSp.add(x.name));
   if (!Array.isArray(s.hl) || s.hl.length < 6) s.hl = DEFAULT_STYLE().hl;
@@ -661,7 +716,7 @@ function normalizeStyle(st) {
   return s;
 }
 
-function newSpeaker(name, side = 'left') { return { name, dq: '', sq: '', label: '', font: '', bold: false, side, bubble: '', btext: '', bfont: '', avatar: '' }; }
+function newSpeaker(name, side = 'left') { return { name, dq: '', sq: '', narr: '', label: '', font: '', bold: false, side, bubble: '', btext: '', bfont: '', avatar: '' }; }
 
 /* ── 새 프로젝트 ── */
 const SAMPLE_TEXT = `[msg=세라]
@@ -1065,12 +1120,21 @@ function customFontCss(f, forOutput) {
   if (f.kind === 'name') return '';
   return '';
 }
+/* 저장소·백업 파일에서 읽은 내 글꼴 값 검사 — 이름·주소·굵기가 <style> 안에 그대로 들어가므로 다시 거름 */
+function sanitizeCustomFont(f) {
+  if (!isObj(f) || typeof f.id !== 'string' || !f.id) return null;
+  const o = Object.assign({}, f, { custom: true, c: 'mine', fb: FB.sans });
+  o.fam = safeFam(o.fam); o.n = String(o.n || o.fam).slice(0, 60);
+  if (o.kind === 'css') o.faces = (Array.isArray(o.faces) ? o.faces : []).filter(x => x && SAFE_FONT_URL.test(x.url)).map(x => ({ fam: o.fam, url: x.url, w: clamp(num(x.w, 400), 100, 900), ital: !!x.ital }));
+  else if (o.kind === 'url') { if (!SAFE_FONT_URL.test(o.url || '')) return null; }
+  else if (o.kind !== 'file' && o.kind !== 'name') return null;
+  return o;
+}
 async function loadCustomFonts() {
   const list = await DB.kv('customFonts', []);
   APPST.customFonts = [];
   for (const f of Array.isArray(list) ? list : []) {
-    const o = Object.assign({ custom: true, c: 'mine', fb: FB.sans }, f);
-    o.fam = safeFam(o.fam); if (o.kind === 'css') o.faces = (o.faces || []).filter(x => x && SAFE_FONT_URL.test(x.url)); if (o.kind === 'url' && !SAFE_FONT_URL.test(o.url || '')) continue;
+    const o = sanitizeCustomFont(f); if (!o) continue;
     if (o.kind === 'file') {
       try { const b = await DB.get('blobs', 'font:' + o.id); if (b && b.v) o.objUrl = URL.createObjectURL(b.v); else o.missing = true; } catch (e) { o.missing = true; }
     }
@@ -1142,10 +1206,11 @@ function parseDoc(src, opt) {
     if (L === '') { flush(); gap(); continue; }
     if (RE_HR.test(L)) { flush(); top().kids.push({ t: 'hr', ln: i }); continue; }
     if ((m = /^(#{1,6})\s+(.+)$/.exec(L))) { flush(); top().kids.push({ t: 'h', lv: Math.min(3, m[1].length), text: m[2].replace(/\s+#+\s*$/, ''), ln: i }); continue; }
-    if ((m = /^>+\s?(.*)$/.exec(L))) {
+    // 인용은 '> 글'처럼 > 뒤에 띄어쓰기가 있을 때만 (>_< ·>.< 같은 이모티콘 줄은 그냥 글)
+    if ((m = /^>+(?:\s+(.*))?$/.exec(L))) {
       if (para) { top().kids.push({ t: 'p', text: para.lines.join('\n'), ln: para.ln }); para = null; }
       if (!quote) quote = { paras: [[]], ln: i };
-      const c = m[1].trim();
+      const c = (m[1] || '').trim();
       if (c === '') quote.paras.push([]);
       else if (opt.lineMode === 'line') { quote.paras[quote.paras.length - 1].push(c); quote.paras.push([]); }
       else quote.paras[quote.paras.length - 1].push(c);
@@ -1177,9 +1242,51 @@ function parseDoc(src, opt) {
       else if (k.t === 'quote') k.inls = k.paras.map(t => parseInline(t));
       if (k.kids) walk(k);
     }
+    if (opt.lineMode === 'line' && node.kids) joinOpenLines(node.kids);
   };
   walk(root);
   return root;
+}
+
+/* ── 여러 줄에 걸친 "대사"·*행동* ('한 줄 = 한 문단'일 때) ──
+   한 줄에 짝 없는 기호가 남으면 아래 줄(12줄 안, 빈 줄은 건너뜀)에서 짝 없는 기호가 있는 첫 줄까지 함께 해석해 보고,
+   첫 줄에서 시작한 요소가 그 줄에서 끝나면 줄마다 다시 나눔 — 문단 나눔은 그대로, 꾸밈만 이어짐.
+   짝이 안 맞으면 예전처럼 기호를 글자 그대로 둠 */
+const RE_OPEN_MARK = /["“”*「」『』]|~~/;
+const unbalanced = inl => inl.some(n => n.t === 'text' && RE_OPEN_MARK.test(n.v));
+const hasBr = a => a.some(n => n.t === 'br' || (n.ch && hasBr(n.ch)));
+const cutHas = (n, f) => !!n.cut && n.cut.includes(f);
+/* 줄바꿈(br)에서 잘라 줄마다 나눔. 잘린 요소의 cut: o = 앞이 잘림(여는 기호 없음), c = 뒤가 잘림(닫는 기호 없음) */
+function splitAtBr(nodes) {
+  const lines = [[]];
+  for (const n of nodes) {
+    if (n.t === 'br') { lines.push([]); continue; }
+    if (!n.ch || !hasBr(n.ch)) { lines[lines.length - 1].push(n); continue; }
+    const parts = splitAtBr(n.ch);
+    parts.forEach((ch, i) => {
+      if (i > 0) lines.push([]);
+      lines[lines.length - 1].push({ ...n, ch, cut: (i > 0 ? 'o' : '') + (i < parts.length - 1 ? 'c' : '') });
+    });
+  }
+  return lines;
+}
+function joinOpenLines(kids) {
+  for (let k = 0; k < kids.length; k++) {
+    const a = kids[k];
+    if (a.t !== 'p' || a.align || !unbalanced(a.inl)) continue;
+    const group = [a];
+    for (let j = k + 1; j < kids.length; j++) {
+      const b = kids[j];
+      if (b.t === 'gap') continue;
+      if (b.t !== 'p' || b.align || b.ln - a.ln > 12) break;
+      group.push(b);
+      if (!unbalanced(b.inl)) continue;
+      const lines = splitAtBr(parseInline(group.map(x => x.text).join('\n')));
+      const ok = lines.length === group.length && lines[0].some(n => cutHas(n, 'c') && !cutHas(n, 'o')) && lines[lines.length - 1].some(n => cutHas(n, 'o') && !cutHas(n, 'c'));
+      if (ok) { group.forEach((x, i) => (x.inl = lines[i])); k = j; }
+      break;
+    }
+  }
 }
 
 /* ── 글자 ── */
@@ -1317,7 +1424,7 @@ function applyDialogueBreak(node, withCorner) {
 /* 문단·대사 개수 (편집기 아래 표시) */
 function docStats(root) {
   let p = 0, d = 0;
-  const walkI = a => { for (const x of a || []) { if (x.t === 'dq') d++; if (x.ch) walkI(x.ch); } };
+  const walkI = a => { for (const x of a || []) { if (x.t === 'dq' && !cutHas(x, 'o')) d++; if (x.ch) walkI(x.ch); } };
   const walk = n => { for (const k of n.kids || []) { if (k.t === 'p') { p++; walkI(k.inl); } if (k.t === 'quote') k.inls.forEach(walkI); if (k.kids) walk(k); } };
   walk(root); return { p, d };
 }
@@ -1340,6 +1447,7 @@ function lum(c) {
 }
 function contrastOf(a, b) { const x = lum(a), y = lum(b); if (x == null || y == null) return null; return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
 const SPK_COLORS = ['#2F5E8C', '#B0476A', '#3F7A55', '#8A5A2B', '#6A4FA0', '#2B7A7A', '#A0452E', '#55607A'];
+const SPK_COLORS_DARK = ['#8FB8E8', '#F0A3BE', '#9BD3A8', '#E8C08A', '#C3A8F0', '#8FD6D6', '#F0A88F', '#B8C0D8'];   // 어두운 배경용
 function hlCss(color, kind, alpha = 100) {
   const c = hexA(cleanColor(color, '#FFE27A'), alpha);
   const clone = { '-webkit-box-decoration-break': 'clone', 'box-decoration-break': 'clone' };
@@ -1390,7 +1498,7 @@ function newCtx(mode, opt = {}) {
   R.site = set && (mode === 'export' || (mode === 'preview' && P.out.pvSite !== false)) ? set : '';
   R.subs = new Map();
   R.spk = new Map((S.speakers || []).filter(x => x && x.name).map(x => [x.name, x]));
-  R.msgr = S.layout.template === 'messenger'; R.avs = new Map();
+  R.msgr = S.layout.template === 'messenger'; R.avs = new Map(); R.narrSp = new Map();
   return R;
 }
 /* 값 하나에 들어갈 수 없는 문자 제거 (속성·<style> 탈출 방지).
@@ -1419,7 +1527,18 @@ const tagAttr = (R, b) => (R.mode === 'preview' && b && b.ln != null ? ` data-ln
 /* ── 글자 단위 ── */
 /* 말풍선 글꼴이 정해진 말풍선 안에서는 글자 요소·상자·제목의 글꼴을 쓰지 않음 (말풍선 전체를 한 글꼴로) */
 const roleFont = (cur, f) => (cur.bfont ? '' : f || '');
+/* 지문 문단 안의 cur.nr = 글자 요소가 시작될 때 본문 값으로 되돌릴 목록 { css, cur, px }.
+   [c]·[b]·[f]처럼 직접 꾸민 곳 안에서는 그 값을 되돌리지 않음 (직접 꾸민 값이 이김) */
+function dropNr(cur, keys) {
+  const nr = cur.nr; if (!nr || !keys.some(k => k in nr.css)) return cur;
+  const css = { ...nr.css }, c = { ...nr.cur };
+  for (const k of keys) { delete css[k]; const ck = { 'font-family': 'font', 'font-weight': 'w', 'font-style': 'i' }[k]; if (ck) delete c[ck]; }
+  return { ...cur, nr: Object.keys(css).length ? { ...nr, css, cur: c } : null };
+}
 function roleOpen(R, key, r, cur) {
+  // 지문 안에서 시작하는 요소: 지문에만 준 값을 본문 값으로 되돌려, 비워 둔 항목이 [본문 글자]를 따르게
+  const nr = cur.nr; if (nr) cur = { ...cur, ...nr.cur, nr: null };
+  const px = nr && nr.css['font-size'] ? nr.px : 0;   // 지문 크기를 바꿨으면 요소 크기는 본문 px 기준으로
   const rfont = roleFont(cur, r.font);
   const w = r.weight || cur.w, it = r.italic || cur.i, font = rfont || cur.font;
   const o = {};
@@ -1429,10 +1548,10 @@ function roleOpen(R, key, r, cur) {
   if (r.italic) o['font-style'] = 'italic';
   const deco = []; if (r.under) deco.push('underline'); if (key === 'strike') deco.push('line-through');
   if (deco.length) { o['text-decoration'] = deco.join(' '); if (r.under) o['text-underline-offset'] = '.2em'; }
-  if (r.size && num(r.size, 100) !== 100) o['font-size'] = (num(r.size, 100) / 100) + 'em';
+  if (r.size && num(r.size, 100) !== 100) o['font-size'] = px ? (px * num(r.size, 100) / 100).toFixed(2) + 'px' : (num(r.size, 100) / 100) + 'em';
   if (parseFloat(r.ls)) o['letter-spacing'] = parseFloat(r.ls) + 'em';
   if (r.hl) Object.assign(o, hlCss(r.hl, r.hlStyle, num(r.hlAlpha, 100)));
-  if (key === 'code') { o['font-family'] = o['font-family'] || FB.mono; o['font-size'] = o['font-size'] || '.9em'; }
+  if (key === 'code') { o['font-family'] = o['font-family'] || FB.mono; o['font-size'] = o['font-size'] || (px ? (px * 0.9).toFixed(2) + 'px' : '.9em'); }
   // 화자별 꾸미기 (대사·낫표 / 생각)
   let nf = font, nw = w;
   const sp = cur.sp && R.spk.get(cur.sp);
@@ -1445,6 +1564,7 @@ function roleOpen(R, key, r, cur) {
     if (speech && sp.font && !cur.inb && fontById(sp.font)) { o['font-family'] = useFont(R, sp.font, nw, it); nf = sp.font; }
     else if (speech && sp.bold) useFont(R, nf, 700, it);
   }
+  if (nr) for (const k in nr.css) if (o[k] == null) o[k] = nr.css[k];
   return { o, next: { ...cur, font: nf, w: nw, i: it } };
 }
 /* 말풍선 안에서 글자 요소·화자 대사 색을 쓸지 (자동: 말풍선 색과 대비 3 이상일 때만) */
@@ -1478,9 +1598,11 @@ function rInl(R, nodes, cur) {
     if (!r) { out += rInl(R, n.ch || [], cur); continue; }
     if (r.on === false) {
       const raw = { dq: [n.o, n.cl], sq: [n.o, n.cl], em: ['*', '*'], strong: ['**', '**'], emstrong: ['***', '***'], strike: ['~~', '~~'], corner: ['「', '」'], dcorner: ['『', '』'] }[key] || ['', ''];
-      out += esc(raw[0]) + rInl(R, n.ch || [], cur) + esc(raw[1]); continue;
+      out += (cutHas(n, 'o') ? '' : esc(raw[0])) + rInl(R, n.ch || [], cur) + (cutHas(n, 'c') ? '' : esc(raw[1])); continue;
     }
-    const [a, b] = markPair(key, r, n);
+    let [a, b] = markPair(key, r, n);
+    if (cutHas(n, 'o')) a = '';   // 여러 줄에 걸친 요소: 여는 기호는 첫 줄에만, 닫는 기호는 끝 줄에만
+    if (cutHas(n, 'c')) b = '';
     const { o, next } = roleOpen(R, key, r, cur);
     const inner = esc(a) + rInl(R, n.ch || [], next) + esc(b);
     const css = Object.keys(o).length ? sst(R, o) : '';
@@ -1509,6 +1631,7 @@ function rTag(R, n, cur) {
     case 'sup': o['vertical-align'] = 'super'; o['font-size'] = '.72em'; o['line-height'] = '0'; break;
     case 'sub': o['vertical-align'] = 'sub'; o['font-size'] = '.72em'; o['line-height'] = '0'; break;
   }
+  if (next.nr) next = dropNr(next, Object.keys(o));
   const inner = rInl(R, n.ch || [], next); const css = Object.keys(o).length ? sst(R, o) : '';
   return css ? `<span style="${css}">${inner}</span>` : inner;
 }
@@ -1522,22 +1645,54 @@ function baseText(R) {
     'text-align': T.align, 'text-indent': T.indent ? T.indent + 'em' : '0', 'word-break': T.keepAll ? 'keep-all' : 'normal', 'overflow-wrap': 'break-word', 'white-space': 'normal'
   };
 }
-function rDropcap(R, inl, env) {
+/* 지문(따옴표·별표 등 기호 밖의 평문) — 지문 문단 상자에 지문 값을 주고, 그 안에서 시작하는 글자 요소는
+   roleOpen에서 본문 값으로 되돌림. 바뀐 값이 없으면 빈 값 (출력이 예전과 똑같음).
+   null은 '지문이 아닌 곳'(인용·상자·말풍선 안) 표시로 씀 */
+function narrStyle(R, base) {
+  const n = R.S.roles.narr, T = R.S.text, none = { css: {}, cur: {}, nr: null };
+  if (!n || n.on === false) return none;
+  const css = {}, reset = {}, cur = {}, rcur = {};
+  const font = n.font && n.font !== T.font && fontById(n.font) ? n.font : '';
+  const w = num(n.weight) || T.weight, it = !!n.italic;
+  if (font) { css['font-family'] = useFont(R, font, w, it); reset['font-family'] = base['font-family']; cur.font = font; rcur.font = T.font; }
+  else if (w !== T.weight || it) useFont(R, T.font, w, it);
+  const c = cleanColor(n.color);
+  if (c && c !== base.color) { css.color = c; reset.color = base.color; }
+  if (w !== T.weight) { css['font-weight'] = w; reset['font-weight'] = T.weight; cur.w = w; rcur.w = T.weight; }
+  if (it) { css['font-style'] = 'italic'; reset['font-style'] = 'normal'; cur.i = true; rcur.i = false; }
+  const sz = num(n.size, 100);
+  if (sz !== 100) { css['font-size'] = (T.size * sz / 100).toFixed(2) + 'px'; reset['font-size'] = base['font-size']; }
+  const ls = parseFloat(n.ls) || 0;
+  if (ls && ls !== T.ls) { css['letter-spacing'] = ls + 'em'; reset['letter-spacing'] = base['letter-spacing']; }
+  if (!Object.keys(css).length) return none;
+  return { css, cur, nr: { css: reset, cur: rcur, px: T.size } };
+}
+/* 이 문단의 지문 값 = 지문 꾸미기 + 화자별 지문 색([msg=이름] 아래 문단). 화자마다 한 번만 만듦 */
+function narrFor(R, env) {
+  const N = env.narr; if (!N) return null;
+  const sp = env.cur.sp, s = sp && R.spk.get(sp), c = s && cleanColor(s.narr);
+  if (!c) return N;
+  if (!R.narrSp.has(sp)) R.narrSp.set(sp, { css: { ...N.css, color: c }, cur: N.cur,
+    nr: { css: { ...(N.nr && N.nr.css), color: env.base.color }, cur: { ...(N.nr && N.nr.cur) }, px: R.S.text.size } });
+  return R.narrSp.get(sp);
+}
+function rDropcap(R, inl, cur) {
   const T = R.S.text; const i = inl.findIndex(x => x.t === 'text' && x.v.trim());
   if (i !== 0) return null;
   const v = inl[0].v.replace(/^\s+/, ''); const ch = Array.from(v)[0];
   if (!ch || !/[\p{L}\p{N}]/u.test(ch)) return null;
   const o = { float: 'left', 'font-size': clamp(num(T.dropcapSize, 3), 1.5, 6) + 'em', 'line-height': '.92', margin: '.04em .1em 0 0', 'font-weight': '700', color: cleanColor(T.dropcapColor) || undefined, 'text-indent': '0' };
-  useFont(R, env.cur.font, 700, false);
-  return `<span style="${sst(R, o)}">${esc(ch)}</span>` + rInl(R, [{ t: 'text', v: v.slice(ch.length) }, ...inl.slice(1)], env.cur);
+  useFont(R, cur.font, 700, false);
+  return `<span style="${sst(R, o)}">${esc(ch)}</span>` + rInl(R, [{ t: 'text', v: v.slice(ch.length) }, ...inl.slice(1)], cur);
 }
 function rP(R, b, env, last) {
-  const T = R.S.text;
-  const o = { margin: '0', padding: `0 0 ${last ? 0 : env.para}px 0`, ...env.base };
+  const N = narrFor(R, env);   // 지문 문단이면 지문 값 (인용·상자·말풍선 안에서는 null)
+  const o = { margin: '0', padding: `0 0 ${last ? 0 : env.para}px 0`, ...env.base, ...(N && N.css) };
   if (b.align) o['text-align'] = b.align;
+  const cur = N ? { ...env.cur, ...N.cur, nr: N.nr } : env.cur;
   let inner = null;
-  if (R.dropcap && env.top) { R.dropcap = false; inner = rDropcap(R, b.inl, env); }
-  if (inner == null) inner = rInl(R, b.inl, env.cur);
+  if (R.dropcap && env.top) { R.dropcap = false; inner = rDropcap(R, b.inl, cur); }
+  if (inner == null) inner = rInl(R, b.inl, cur);
   if (!inner.trim()) inner = '&nbsp;';
   return `<div${tagAttr(R, b)} style="${st(R, o)}">${inner}</div>`;
 }
@@ -1563,7 +1718,7 @@ function rQuote(R, b, env, last) {
   const qf = roleFont(env.cur, q.font), font = qf || env.cur.font;
   const base = { ...env.base, 'font-size': (T.size * num(q.size, 96) / 100).toFixed(2) + 'px', color: cleanColor(q.color) || env.base.color, 'font-style': q.italic ? 'italic' : 'normal', 'text-align': q.align || 'left', 'text-indent': '0' };
   if (qf) base['font-family'] = useFont(R, qf, T.weight, q.italic);
-  const sub = { ...env, base, cur: { ...env.cur, font, w: T.weight, i: !!q.italic }, para: Math.round(env.para * 0.6), top: false };
+  const sub = { ...env, base, cur: { ...env.cur, font, w: T.weight, i: !!q.italic }, para: Math.round(env.para * 0.6), top: false, narr: null };
   const inner = b.inls.map((inl, i) => rP(R, { inl }, sub, i === b.inls.length - 1)).join('');
   const bw = num(q.barW, 3); const rad = num(q.radius, 6);
   const o = { margin: `${q.mt}px 0 ${last ? 0 : q.mb}px 0`, padding: `${q.pad}px ${q.pad + 2}px`, 'background-color': cleanColor(q.bg) || undefined,
@@ -1623,7 +1778,7 @@ function rBox(R, b, env, last) {
   const xf = roleFont(env.cur, x.font), font = xf || env.cur.font;
   const base = { ...env.base, color: cleanColor(x.color) || env.base.color, 'font-style': x.italic ? 'italic' : 'normal', 'text-align': x.align || env.base['text-align'] };
   if (xf) base['font-family'] = useFont(R, xf, T.weight, x.italic);
-  const sub = { ...env, base, cur: { ...env.cur, font, w: T.weight, i: !!x.italic }, top: false };
+  const sub = { ...env, base, cur: { ...env.cur, font, w: T.weight, i: !!x.italic }, top: false, narr: null };
   const inner = rBlocks(R, b.kids, sub);
   const bc = cleanColor(x.border);
   const o = { margin: `16px 0 ${last ? 0 : 18}px 0`, padding: `${x.pad}px ${x.pad + 2}px`, 'background-color': cleanColor(x.bg) || undefined, 'border-radius': x.radius + 'px', 'box-sizing': 'border-box' };
@@ -1786,7 +1941,7 @@ function rMsgr(R, kids, env) {
       const cbg = cleanColor(M.cBg), cc = cleanColor(M.cColor) || env.base.color;
       const base = { ...env.base, color: cc, 'text-align': 'center', 'text-indent': '0', 'font-size': (fs * 0.88).toFixed(2) + 'px', 'line-height': M.lh };
       const bf = bubbleFont(R, it.name, base);
-      const inner = rBlocks(R, msgrBlocks(R, it.blocks), { ...env, flat: true, top: false, base, para: Math.round(env.para * 0.5), cur: { ...env.cur, sp: it.name, bub: cbg || '', font: bf || env.cur.font, bfont: bf, inb: true } });
+      const inner = rBlocks(R, msgrBlocks(R, it.blocks), { ...env, flat: true, top: false, base, narr: null, para: Math.round(env.para * 0.5), cur: { ...env.cur, sp: it.name, bub: cbg || '', font: bf || env.cur.font, bfont: bf, inb: true } });
       out += `<div${cut}${at} style="${st(R, { margin: `${mt}px 0 0 0`, padding: '0', 'text-align': 'center', 'text-indent': '0' })}"><div style="${st(R, { display: 'inline-block', 'max-width': '92%', margin: '0', padding: cbg ? '5px 14px' : '2px 4px', 'border-radius': '14px', 'background-color': cbg || undefined, 'box-sizing': 'border-box', 'text-align': 'center' })}">${inner}</div></div>`;
     } else {
       const right = it.kind === 'right', head = !sameRun;
@@ -1797,7 +1952,7 @@ function rMsgr(R, kids, env) {
       const br = M.tail && head ? (right ? `${rad}px ${tip}px ${rad}px ${rad}px` : `${tip}px ${rad}px ${rad}px ${rad}px`) : rad + 'px';
       const base = { ...env.base, color: c.fg, 'text-align': 'left', 'text-indent': '0', 'font-size': fs.toFixed(2) + 'px', 'line-height': M.lh };
       const bf = bubbleFont(R, it.name, base);
-      const inner = rBlocks(R, msgrBlocks(R, it.blocks), { ...env, flat: true, top: false, base, para: Math.round(env.para * 0.6), cur: { ...env.cur, sp: it.name, bub: c.bg || '', font: bf || env.cur.font, bfont: bf, inb: true } });
+      const inner = rBlocks(R, msgrBlocks(R, it.blocks), { ...env, flat: true, top: false, base, narr: null, para: Math.round(env.para * 0.6), cur: { ...env.cur, sp: it.name, bub: c.bg || '', font: bf || env.cur.font, bfont: bf, inb: true } });
       const bub = { display: 'block', margin: '0', padding: `${M.pad}px ${M.pad + 4}px`, 'background-color': c.bg || undefined, color: c.fg, border: c.border ? `1px solid ${c.border}` : undefined,
         'border-radius': br, 'box-shadow': M.shadow ? '0 1px 2px rgba(0,0,0,.12)' : undefined, 'box-sizing': 'border-box', 'max-width': '100%', 'min-width': '0', 'text-align': 'left', 'overflow-wrap': 'break-word' };
       let name = '';
@@ -1885,7 +2040,7 @@ function renderDoc(mode, opt = {}) {
     Object.assign(parseCache, { text: P.text, key, root, stats: R.stats });
   }
   const base = baseText(R); R.baseFont = base['font-family'];
-  const env = { base, cur: { font: T.font, w: T.weight, i: false }, para: T.para, top: true };
+  const env = { base, cur: { font: T.font, w: T.weight, i: false }, para: T.para, top: true, narr: narrStyle(R, base) };
   const bodyHtml = rBlocks(R, root.kids, env);
   const cover = rCover(R, env);
   const end = S.end.show ? `<div${mode === 'image' ? ' data-cut=""' : ''} style="${st(R, { margin: '30px 0 0 0', 'text-align': 'center', color: cleanColor(S.end.color) || base.color, 'font-size': S.end.size + 'px', 'letter-spacing': S.end.ls + 'em', 'line-height': '1.5', 'font-family': base['font-family'], 'text-indent': '0' })}">${esc(S.end.text)}</div>` : '';
@@ -2116,6 +2271,7 @@ async function buildOutput(mode = 'export', opt = {}) {
   if (mode === 'export' && fonts.external.length && !(prof.hosts && Object.values(prof.hosts).some(v => v === true))) warns.push(`외부 글꼴 ${fonts.external.length}개(${fonts.external.join(', ')})를 jsDelivr·구글·네이버에서 불러와요. 사이트나 보는 사람의 환경이 막으면 기본 글꼴로 보여요.`);
   if (mode === 'export' && P.out.profile === 'kkangtong' && fonts.imports.length) warns.push('깡통 커뮤니티에서 @import가 살아남는지는 확인되지 않았어요. [시험 게시 코드]로 한 번 확인해 보세요.');
   const text = out.form === 'full' ? full : snippet;
+  if (mode === 'export' && out.form === 'full' && (out.profile === 'kkangtong' || prof.siteFonts === 'kkangtong')) warns.push('깡통 커뮤니티에는 [게시용 조각]을 붙여 넣으세요. 완성 HTML 문서의 <meta>는 사이트가 지우고, <title> 안의 제목은 본문 글자로 남을 수 있어요.');
   if (mode === 'export' && text.length > 150000 && !out.compact) warns.push(`코드가 ${fmtBytes(byteLen(text))}로 커요. 모든 글자에 스타일을 직접 붙이는 가장 안전한 방식이라서 그래요. 사이트에 글자 수 제한이 있으면 [시험 게시 코드] 4번(<style> 규칙)이 성공하는지 확인한 뒤 [같은 스타일 묶기]를 켜면 1/3~1/4로 줄어요.`);
   const maxChars = prof.maxChars || 0;
   if (maxChars && text.length > maxChars) warns.push(`글자 수가 ${text.length.toLocaleString()}자로, 설정한 제한(${maxChars.toLocaleString()}자)을 넘어요.`);
@@ -2268,6 +2424,26 @@ function initGrip() {
   g.addEventListener('pointermove', e => { if (!on) return; const hh = clamp(h0 + e.clientY - y0, 90, window.innerHeight - 170); $('#pv').style.setProperty('--pvh', hh + 'px'); PV.layout(); });
   const end = () => { if (!on) return; on = false; $('#pv').style.transition = ''; const hh = Math.round($('#pv').getBoundingClientRect().height); APPST.prefs.pv[APPST.tab] = 'c' + hh; savePrefsLater(); $$('#pvSize button').forEach(b => b.classList.remove('on')); };
   g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
+}
+/* PC: 작업창 오른쪽 경계를 끌어 폭 조절 (미리보기는 최소 360px 남김). 두 번 누르면 기본 폭, ←→ 키로도 */
+const PANEL_W = 420;
+function initPanelGrip() {
+  const g = $('#vgrip'), work = $('.work'), app = $('#app');
+  const cur = () => $('#panel').getBoundingClientRect().width;
+  const apply = (w, save) => {
+    w = clamp(Math.round(w), 320, Math.max(320, window.innerWidth - 360));
+    work.style.setProperty('--panelW', w + 'px'); g.setAttribute('aria-valuenow', String(w));
+    if (save) { APPST.prefs.panelW = w; savePrefsLater(); }
+  };
+  let on = false, x0 = 0, w0 = 0;
+  g.addEventListener('pointerdown', e => { if (e.button !== 0) return; on = true; x0 = e.clientX; w0 = cur(); g.setPointerCapture(e.pointerId); app.classList.add('resizing'); e.preventDefault(); });
+  g.addEventListener('pointermove', e => { if (on) apply(w0 + e.clientX - x0, false); });
+  const end = () => { if (!on) return; on = false; app.classList.remove('resizing'); apply(cur(), true); };
+  g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
+  g.addEventListener('dblclick', () => apply(PANEL_W, true));
+  g.addEventListener('keydown', e => { const d = { ArrowLeft: -20, ArrowRight: 20 }[e.key]; if (d) { e.preventDefault(); apply(cur() + d, true); } });
+  apply(APPST.prefs.panelW || PANEL_W, false);
+  window.addEventListener('resize', debounce(() => apply(APPST.prefs.panelW || PANEL_W, false), 150));
 }
 
 /* ── 렌더 묶음 ── */
@@ -2456,7 +2632,7 @@ function buildToolbar() {
     B(h('span.lbl', '“ ”'), '큰따옴표로 감싸기', () => Ed.wrap('"', '"')),
     B(h('span.lbl', '*기울임*'), '별표로 감싸기', () => Ed.wrap('*', '*')),
     B(h('span.lbl', '제목'), '줄을 제목으로 (# → ## → ### → 해제)', () => Ed.prefixLines(l => { const m = /^(#{1,3})\s+/.exec(l); if (!l.trim()) return l; if (!m) return '# ' + l; return m[1].length >= 3 ? l.replace(/^#+\s+/, '') : '#' + l; })),
-    B(h('span.lbl', '인용'), '인용구로 (다시 누르면 해제)', () => Ed.prefixLines(l => (/^>\s?/.test(l) ? l.replace(/^>\s?/, '') : l.trim() ? '> ' + l : l))),
+    B(h('span.lbl', '인용'), '인용구로 (다시 누르면 해제)', () => Ed.prefixLines(l => (/^>(\s|$)/.test(l) ? l.replace(/^>\s?/, '') : l.trim() ? '> ' + l : l))),
     B(h('span.lbl', '구분선'), '구분선 넣기', () => Ed.insertLine('---')),
     h('span.div'),
     B(h('span.lbl', '접기 구간'), '선택한 줄을 접기 구간으로', async () => { const t = await askText('접기 제목', '펼쳐 보기'); if (t != null) Ed.wrapLines(`[fold=${t.replace(/[\]\n]/g, '')}]`, '[/fold]'); }),
@@ -2522,20 +2698,27 @@ function buildToolbar() {
   document.addEventListener('selectionchange', () => Ed.selHint());
   return wrap;
 }
-/* 원문(치환 적용 후)에서 화자 이름 모으기 */
+/* 원문(치환 적용 후)에서 화자 이름 모으기.
+   꾸미기 탭 요약 줄이 값을 바꿀 때마다(슬라이더를 끄는 동안에도) 불러서, 글·규칙이 그대로면 지난 결과를 씀 */
+const spkMemo = { text: null, rules: null, names: [] };
 function speakerNames() {
+  const rules = JSON.stringify(P.rules);
+  if (spkMemo.text === P.text && spkMemo.rules === rules) return spkMemo.names.slice();
   const t = applyRules(P.text, compileRules(P.rules)); const s = new Set();
   for (const m of t.matchAll(/^\s*\[msg=([^\]\n]{1,60})\]\s*$/gm)) s.add(m[1].trim());
   for (const m of t.matchAll(/\[sp=([^\]\n]{1,60})\]/g)) s.add(m[1].trim());
-  return [...s].filter(Boolean);
+  Object.assign(spkMemo, { text: P.text, rules, names: [...s].filter(Boolean) });
+  return spkMemo.names.slice();
 }
 function cssObj(o) { const r = {}; for (const [k, v] of Object.entries(o)) r[k.replace(/^-webkit-/, 'webkit-').replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = v; return r; }
 
 function openCheatSheet() {
   const rows = [
-    ['"대사" / “대사”', '큰따옴표 구간 — 꾸미기 > 글자 요소에서 따로 꾸밈'], ["'생각' / ‘생각’", '작은따옴표 구간 (don’t 같은 영어 축약은 제외)'],
+    ['그냥 쓴 글', '지문(평문) — 꾸미기 > 글자 요소 > 지문에서 따로 꾸밈 (비워 두면 본문 글자 그대로)'],
+    ['"대사" / “대사”', '큰따옴표 구간 — 꾸미기 > 글자 요소에서 따로 꾸밈'],
+    ['"첫 줄… (줄바꿈) …끝 줄"', '여러 줄에 걸친 대사·*행동*·「낫표」도 이어서 꾸밈 (12줄 안, 줄 나눔은 그대로)'], ["'생각' / ‘생각’", '작은따옴표 구간 (don’t 같은 영어 축약은 제외)'],
     ['*행동*', '별표 하나 — 기울임·행동'], ['**굵게**  ***굵은기울임***', '별표 둘·셋'], ['~~취소~~', '취소선'], ['`코드`', '코드 글씨'], ['「낫표」 『겹낫표』', '낫표 구간'],
-    ['# 제목  ## 제목  ### 제목', '줄 맨 앞에 # 과 띄어쓰기'], ['> 인용', '줄 맨 앞에 >'], ['---', '한 줄에 --- (또는 *** ___)만 있으면 구분선'], ['```  …  ```', '코드 블록(상태창 등) — 줄바꿈 그대로'],
+    ['# 제목  ## 제목  ### 제목', '줄 맨 앞에 # 과 띄어쓰기'], ['> 인용', '줄 맨 앞에 > 와 띄어쓰기 (>_< 처럼 띄어쓰기 없는 줄은 그냥 글)'], ['---', '한 줄에 --- (또는 *** ___)만 있으면 구분선'], ['```  …  ```', '코드 블록(상태창 등) — 줄바꿈 그대로'],
     ['[hl=1]글[/hl]', '형광펜 1~6번 (꾸미기 > 형광펜) · [hl=#FFE27A]처럼 색 직접'], ['[c=#C0392B]글[/c]', '글자색'], ['[bg=#EEE]글[/bg]', '글자 배경색'],
     ['[b] [i] [u] [s]', '굵게 · 기울임 · 밑줄 · 취소선'], ['[sz=1.3]글[/sz]', '크기 (0.5~3배)'], ['[f=maruburi]글[/f]', '이 부분만 다른 글꼴 (도구 막대의 [글꼴])'], ['[sup] [sub]', '위·아래 첨자'],
     ['[msg=이름]', '한 줄에 혼자 — 여기부터 다음 [msg] 전까지 이 화자의 메시지. 이름표가 보이고, 화자별 대사 색이 적용돼요. 메신저 틀에서는 이 단위로 말풍선이 생겨요'], ['[/msg]', '한 줄에 혼자 — 화자 끝. 여기부터는 지문(화자 없음). 꾸밈 버튼 [화자] → [선택한 줄만]을 쓰면 자동으로 들어가요'], ['[sp=이름]"대사"[/sp]', '한 문단 안에서 이 대사만 그 화자로 (소설처럼 여러 사람이 섞여 말할 때)'], ['[fold=제목] … [/fold]', '접기 구간 (각각 한 줄에 혼자)'], ['[box=letter] … [/box]', '특수 상자: letter 편지 · memo 쪽지 · system 시스템 · flashback 회상 · note 메모'],
@@ -2561,6 +2744,7 @@ function rootOf(path) { const k = path.split('.')[0]; return k === 'meta' ? [P.m
 function getV(path) { const [o, p] = rootOf(path); return getPath(o, p); }
 function setV(path, v, now) {
   const [o, p] = rootOf(path); setPath(o, p, v);
+  UI.prune();
   for (const b of UI.binds) if (b.path === path) try { b.upd(v); } catch (e) {}
   UI.evalConds(); UI.fire(path);
   if (path.startsWith('img.')) { markDirty(); return; }
@@ -2570,11 +2754,13 @@ const UI = {
   binds: [], conds: [], hooks: [],
   bind(path, upd, el) { this.binds.push({ path, upd, el }); },
   when(el, fn) { this.conds.push({ el, fn }); el.hidden = !fn(); return el; },
-  on(prefix, fn) { this.hooks.push({ prefix, fn }); },
+  on(prefix, fn, el) { this.hooks.push({ prefix, fn, el }); },   // el: 이 부품이 화면에서 빠지면 함께 정리
+  /* 다시 그려서 화면에서 빠진 부품(글자 요소 칩을 바꿀 때 등)의 연결을 정리 */
+  prune() { const live = x => !x.el || x.el.isConnected; this.binds = this.binds.filter(live); this.hooks = this.hooks.filter(live); },
   fire(path) { for (const x of this.hooks) if (path.startsWith(x.prefix)) try { x.fn(path); } catch (e) { Log.warn('화면 갱신 실패', e && e.message); } },
   evalConds() { this.conds = this.conds.filter(c => c.el.isConnected || c.keep); for (const c of this.conds) c.el.hidden = !c.fn(); },
   refresh() {
-    this.binds = this.binds.filter(b => b.el ? b.el.isConnected : true);
+    this.prune();
     for (const b of this.binds) try { b.upd(getV(b.path)); } catch (e) { /* 지워진 경로 */ }
     this.evalConds(); for (const x of this.hooks) try { x.fn(''); } catch (e) {}
   }
@@ -2634,7 +2820,7 @@ function cFont(path, label, opt = {}) {
   UI.bind(path, upd, el); upd(getV(path)); return el;
 }
 function sec(id, title, sub, build, reset) {
-  const d = h('details.sec');
+  const d = h('details.sec', { 'data-sec': id });
   const subEl = h('span.sub', typeof sub === 'function' ? sub() : sub || '');
   d.append(h('summary', h('span.ttl', title), subEl));
   const body = h('div.body'); d.append(body);
@@ -2725,7 +2911,7 @@ function autoFontFiles() {
 }
 function pickFont(cur, opt = {}) {
   return new Promise(res => {
-    let pick = null;
+    let pick = null, io = null;
     openSheet(opt.title || '글꼴 고르기', (body, close) => {
       const set = siteSetOf(profileOf(P.out)); const setName = set ? SITE_FONT_SETS[set].name : '';
       const siteList = set ? SITE_FONT_SETS[set].list.map(x => FONT_MAP.get(x.id)) : [];
@@ -2734,7 +2920,7 @@ function pickFont(cur, opt = {}) {
       const catBar = h('div.fcat'); const list = h('div.flist');
       const search = h('input', { type: 'search', placeholder: '글꼴 이름 찾기', style: { marginBottom: '10px' } });
       const auto = autoFontFiles(); const vis = new Set();
-      const io = new IntersectionObserver(es => {
+      io = new IntersectionObserver(es => {
         for (const e of es) {
           const id = e.target.dataset.id; if (!e.isIntersecting) { vis.delete(id); continue; }
           let f = fontById(id); if (f && f.site) f = f.eq ? FONT_MAP.get(f.eq) : null; if (!f) { io.unobserve(e.target); continue; }
@@ -2766,7 +2952,7 @@ function pickFont(cur, opt = {}) {
         set ? h('div.note', `${setName}은 게시할 때 글꼴 파일을 지워서, [${setName} 글꼴]만 게시글에 그대로 보여요. 다른 글꼴은 게시글에서 비슷한 ${setName} 글꼴로 바뀌어요. 이미지로 저장할 때는 고른 글꼴 그대로 나와요.`) : null,
         h('p.help', { style: { margin: '-2px 0 10px' } }, auto ? '보이는 글꼴은 미리보기를 저절로 불러와요.' : '모바일 데이터에선 데이터를 아끼려고, 구글 글꼴 말고는 [보기]를 눌러야 미리보기를 불러와요 (글꼴 파일 하나에 약 0.3~2MB).'), list);
       draw();
-    }, { onClose: () => res(pick) });
+    }, { onClose: () => { if (io) io.disconnect(); res(pick); } });
   });
 }
 
@@ -2826,7 +3012,7 @@ function contrastBadge(colorPath) {
     if (r == null) { el.textContent = '읽기 쉬움: 배경이 그림이라 계산 못 함'; el.className = 'badge'; return; }
     el.textContent = `읽기 쉬움 ${r >= 7 ? '아주 좋음' : r >= 4.5 ? '좋음' : r >= 3 ? '보통' : '흐림'} (${r.toFixed(1)})`; el.className = 'badge ' + (r >= 4.5 ? 'ok' : r >= 3 ? '' : 'warn');
   };
-  UI.on('', upd); upd(); return el;
+  UI.on('', upd, el); upd(); return el;
 }
 const WEIGHTS = [[0, '기본'], [300, '얇게 300'], [400, '보통 400'], [500, '중간 500'], [600, '약간 굵게 600'], [700, '굵게 700'], [800, '아주 굵게 800']];
 const ALIGNS = [['left', '왼쪽'], ['center', '가운데'], ['right', '오른쪽'], ['justify', '양쪽']];
@@ -2838,8 +3024,8 @@ function buildDesignPanel(root) {
     sec('layout', '틀·상자', () => (P.style.layout.template === 'messenger' ? '메신저 · ' : '') + ({ full: '펼침', scroll: '스크롤 상자', fold: '접기' })[P.style.layout.mode] + ` · ${P.style.layout.width}px`, buildLayoutSec, ['layout', 'card', 'end']),
     UI.when(sec('msgr', '메신저 말풍선', () => { const r = P.style.speakers.filter(x => x.side === 'right').map(x => x.name); return r.length ? `오른쪽: ${r.join(', ')}` : '오른쪽 화자 없음'; }, buildMsgrSec, ['msgr']), () => P.style.layout.template === 'messenger'),
     sec('cover', '제목·표지', () => P.meta.title || '제목 없음', buildCoverSec, ['cover']),
-    sec('text', '본문 글자', () => `${fontLabel(P.style.text.font)} · ${P.style.text.size}px`, buildTextSec, ['text']),
-    sec('roles', '글자 요소 (마크다운·따옴표)', '대사·생각·제목·인용 따로', buildRolesSec, ['roles']),
+    sec('text', '본문 글자 (전체 기본)', () => `${fontLabel(P.style.text.font)} · ${P.style.text.size}px`, buildTextSec, ['text']),
+    sec('roles', '글자 요소 (지문·대사·마크다운)', '지문·대사·생각·제목·인용 따로', buildRolesSec, ['roles']),
     sec('speakers', '화자별 꾸미기', () => { const n = speakerNames().length; return n ? `화자 ${n}명` : '[msg]·[sp] 없음'; }, buildSpeakerSec, ['speakers']),
     sec('hl', '형광펜', '6가지', buildHlSec, ['hl']),
     sec('hr', '구분선 ---', () => ({ 'glyph-line': '선+문양', glyph: '문양', line: '실선', dashed: '점선', dotted: '도트선', double: '이중선', fade: '흐린 선', space: '빈 공간' })[P.style.hr.kind] || '', buildHrSec, ['hr']),
@@ -2866,9 +3052,14 @@ function themeBase() { return P.themeBase ? normalizeStyle(deepMerge(DEFAULT_STY
 function resetBtn(paths, label) {
   return h('div', { style: { marginTop: '12px', display: 'flex', justifyContent: 'flex-end' } }, h('button.btn.sm', { type: 'button', onclick: () => {
     const base = themeBase();
+    const keep = KEEP_ON_RESET.filter(k => paths.some(p => k.startsWith(p + '.'))).map(k => [k, clone(getPath(P.style, k))]);
+    // 화자: 색·글꼴만 되돌리고 이름·말풍선 위치·프로필 사진은 남김
+    const spk = paths.includes('speakers') ? P.style.speakers.map(x => ({ ...newSpeaker(x.name, x.side), avatar: x.avatar })) : null;
     for (const p of paths) setPath(P.style, p, clone(getPath(base, p)));
+    for (const [k, v] of keep) setPath(P.style, k, v);
+    if (spk) P.style.speakers = spk;
     UI.refresh(); render(); commit(true); Ed.refreshHl && Ed.refreshHl();
-    toast(`「${P.themeName || '크림 페이퍼'}」 기본값으로 돌렸어요 (되돌리기 가능)`);
+    toast(`「${P.themeName || '크림 페이퍼'}」 기본값으로 돌렸어요${keep.length || spk ? ' — 글 해석·틀 구조는 그대로' : ''} (되돌리기 가능)`);
   } }, '↺ ' + (label || '이 항목 기본값으로')));
 }
 /* ── 테마 ── */
@@ -2876,7 +3067,7 @@ function themePreview(st) {
   const s = normalizeStyle(deepMerge(DEFAULT_STYLE(), st));
   const bg = bgParts(s.bg, P.assets).o;
   return h('span.tv', { style: cssObj(bg) }, h('i', { style: { background: hexA(s.card.color, s.card.alpha), color: s.text.color, fontFamily: fontStack(fontById(s.text.font)) } },
-    h('span', '지문이 흐르고 '), h('span', { style: { color: s.roles.dq.color || s.text.color, fontWeight: s.roles.dq.weight || 'inherit' } }, '“대사”'), h('br'), h('span', { style: { color: s.roles.em.color || s.text.color } }, '행동 묘사…')));
+    h('span', s.roles.narr.color ? { style: { color: s.roles.narr.color } } : null, '지문이 흐르고 '), h('span', { style: { color: s.roles.dq.color || s.text.color, fontWeight: s.roles.dq.weight || 'inherit' } }, '“대사”'), h('br'), h('span', { style: { color: s.roles.em.color || s.text.color } }, '행동 묘사…')));
 }
 function applyTheme(st, name) {
   const keep = {}; for (const p of KEEP_ON_THEME) keep[p] = getPath(P.style, p);
@@ -2884,7 +3075,15 @@ function applyTheme(st, name) {
   for (const p of KEEP_ON_THEME) setPath(ns, p, keep[p]);
   P.style = ns; P.themeBase = clone(st); P.themeName = name;
   UI.refresh(); render(); commit(true); Ed.refreshHl && Ed.refreshHl();
-  toast(`「${name}」 테마를 적용했어요 (되돌리기 가능)`);
+  // 화자별 색은 캐릭터마다 직접 고른 값이라 그대로 두지만, 새 배경에서 안 보이면 알려 줌
+  const dim = lowContrastSpeakers();
+  toast(dim.length ? `「${name}」 테마를 적용했어요. ${dim.join(', ')}의 화자별 색이 새 배경에서 잘 안 보여요 — [화자별 꾸미기]에서 바꿔 주세요` : `「${name}」 테마를 적용했어요 (되돌리기 가능)`, '', dim.length ? 5500 : 2600);
+}
+/* 대사·생각·지문·이름표 색이 지금 배경과 대비 3이 안 되는 화자 이름 */
+function lowContrastSpeakers() {
+  const bg = effectiveBg(); if (!bg) return [];
+  const names = speakerNames();
+  return P.style.speakers.filter(x => names.includes(x.name) && ['dq', 'sq', 'narr', 'label'].some(k => { const r = x[k] ? contrastOf(cleanColor(x[k]), bg) : null; return r != null && r < 3; })).map(x => x.name).slice(0, 4);
 }
 function buildThemeSec(body) {
   const grid = h('div.thm');
@@ -2899,7 +3098,7 @@ function buildThemeSec(body) {
       h('button.ib', { type: 'button', 'aria-label': '삭제', html: ico('trash'), onclick: async () => { if (await confirmBox(`「${t.name}」 테마를 지울까요?`, '지우기', true)) { APPST.userThemes.splice(i, 1); await DB.setkv('themes', APPST.userThemes); drawMine(); } } }))));
   };
   drawMine();
-  body.append(h('p.help', '테마를 바꿔도 본문·표지 글·상자 방식(스크롤/접기)은 그대로예요.'), grid,
+  body.append(h('p.help', '테마를 바꿔도 본문·표지 글·상자 방식(스크롤/접기)·화자별 꾸미기는 그대로예요. 메신저 말풍선은 모양·배치는 그대로, 색만 테마를 따라가요.'), grid,
     h('div.sub-h', '내 테마'), mine,
     h('div.row', { style: { marginTop: '10px' } },
       h('button.btn.sm', { type: 'button', onclick: async () => { const n = await askText('테마 이름', P.name + ' 테마'); if (!n) return; APPST.userThemes.unshift({ name: n, style: clone(P.style), at: Date.now() }); await DB.setkv('themes', APPST.userThemes); drawMine(); toast('내 테마로 저장했어요'); } }, '지금 모양을 내 테마로 저장'),
@@ -2973,9 +3172,31 @@ function buildCoverSec(b) {
   );
 }
 
+/* ── 다른 섹션에서 [글자 요소]의 한 요소로 바로 가기 ── */
+let rolesPick = null;   // 글자 요소 섹션이 만들어지면 채워짐
+function openRole(k) {
+  APPST.prefs.role = k; savePrefsLater();
+  const d = $('details.sec[data-sec="roles"]'); if (!d) return;
+  if (rolesPick) rolesPick(k);
+  d.open = true;
+  setTimeout(() => d.scrollIntoView({ block: 'start', behavior: 'smooth' }), 60);
+}
+/* 지문에 따로 정한 값 이름들 (본문 글자 섹션 안내용) */
+function narrCustom() {
+  const n = P.style.roles.narr, T = P.style.text, on = n && n.on !== false;
+  return [[on && n.color, '글자색'], [on && n.font && n.font !== T.font, '글꼴'], [on && n.weight && n.weight !== T.weight, '굵기'], [on && n.italic, '기울임'], [on && num(n.size, 100) !== 100, '크기'], [on && parseFloat(n.ls), '자간'],
+    [P.style.layout.template !== 'messenger' && P.style.speakers.some(x => x.narr), '화자별 지문 색']].filter(x => x[0]).map(x => x[1]);
+}
+
 /* ── 본문 글자 ── */
 function buildTextSec(b) {
+  const narrNote = h('div.note.warn');
+  const updNarr = () => { const l = narrCustom(); narrNote.hidden = !l.length; narrNote.textContent = `[지문]에 따로 정한 값(${l.join('·')})은 여기서 바꿔도 지문에는 반영되지 않아요. 대사·생각 등 다른 요소에서 비워 둔 값에는 반영돼요.`; };
+  UI.on('', updNarr, narrNote); updNarr();
   b.append(
+    h('div.note', h('b', '모든 글자의 기본값'), '이에요. 지문·대사·생각·제목 등에서 따로 정하지 않은 값은 여기를 따라요. 따옴표·별표 밖의 평문(지문)만 바꾸려면 [글자 요소 > 지문]에서 바꾸세요.',
+      h('div', { style: { marginTop: '8px' } }, h('button.btn.sm', { type: 'button', onclick: () => openRole('narr') }, '지문만 따로 꾸미기 ›'))),
+    narrNote,
     cFont('text.font', '글꼴'),
     cRange('text.size', '글자 크기', 11, 26, 0.5, 'px', { hardMin: 8, hardMax: 48 }),
     cRange('text.lh', '줄 간격 (행간)', 1.2, 2.8, 0.05, '배'),
@@ -3004,7 +3225,7 @@ function buildTextSec(b) {
 /* ── 글자 요소 ── */
 function buildRolesSec(b) {
   const chips = h('div.roles'); const area = h('div');
-  const all = [...INLINE_ROLES, ...BLOCK_ROLES];
+  const all = [NARR_ROLE, ...INLINE_ROLES, ...BLOCK_ROLES];
   let cur = APPST.prefs.role && all.some(r => r[0] === APPST.prefs.role) ? APPST.prefs.role : 'dq';
   const drawChips = () => {
     chips.innerHTML = '';
@@ -3016,7 +3237,17 @@ function buildRolesSec(b) {
   const drawArea = () => {
     area.innerHTML = ''; const p = 'roles.' + cur + '.';
     const isInline = INLINE_ROLES.some(r => r[0] === cur);
-    if (isInline) {
+    if (cur === 'narr') {
+      // 밑줄·형광펜은 문단 전체에 걸리면 안쪽 대사까지 칠해지므로 지문에는 두지 않음 (필요하면 [hl]·[u]로)
+      area.append(h('p.help', '따옴표·별표·# 같은 기호 없이 쓴 평문(지문)만 꾸며요. 비워 둔 값은 [본문 글자]를 따라요. 여기서 바꿔도 대사·생각·강조 같은 다른 요소는 바뀌지 않아요.'),
+        cCheck(p + 'on', '지문 따로 꾸미기', '끄면 지문도 본문 글자 그대로'),
+        UI.when(h('div',
+          h('div.ctl', lab('글자색', '', contrastBadge(p + 'color'))), cColor(p + 'color', '', { empty: true }),
+          cFont(p + 'font', '글꼴', { inherit: '본문 글꼴 따름' }), cSelect(p + 'weight', '굵기', WEIGHTS, { num: true }), cCheck(p + 'italic', '기울임'),
+          cRange(p + 'size', '크기', 70, 140, 1, '%', { help: '본문 글자 크기 기준' }), cRange(p + 'ls', '자간', -0.1, 0.3, 0.005, 'em', { help: '0이면 본문과 같게' })
+        ), () => P.style.roles.narr.on !== false),
+        h('p.help', '지문으로 보는 곳: 일반 문단, 접기·정렬 구간 안 문단, 메신저 틀의 화자 없는 글. 제목·인용·코드 블록·특수 상자·말풍선 안 글은 각자 설정을 따라요. [b]·[c=색] 같은 꾸밈 표시는 지문 위에 그대로 더해져요.'));
+    } else if (isInline) {
       area.append(cCheck(p + 'on', '이 요소 꾸미기', '끄면 기호 그대로 평범한 글자로'),
         UI.when(h('div',
           cColor(p + 'color', '글자색', { empty: true }), cFont(p + 'font', '글꼴', { inherit: '본문 글꼴 따름' }), cSelect(p + 'weight', '굵기', WEIGHTS, { num: true }),
@@ -3051,7 +3282,8 @@ function buildRolesSec(b) {
     area.append(resetBtn(['roles.' + cur], '이 요소만 기본값으로'));
   };
   UI.on('roles.', path => { if (/\.(on|show)$/.test(path) || !path) drawChips(); });
-  b.append(h('p.help', '원문의 기호(따옴표·별표·# 등)로 구분되는 부분마다 따로 꾸며요. 대사와 지문을 다르게 하려면 [큰따옴표]를 고르세요.'), chips, area);
+  rolesPick = k => { cur = k; drawChips(); drawArea(); };
+  b.append(h('p.help', '원문의 기호(따옴표·별표·# 등)로 구분되는 부분마다 따로 꾸며요. [지문]은 기호 없이 쓴 평문이에요. 각 요소에서 비워 둔 값은 [본문 글자]를 따라요.'), chips, area);
   drawChips(); drawArea();
 }
 
@@ -3067,7 +3299,9 @@ function buildSpeakerSec(b) {
       if (!names.includes(x.name)) return;
       const p = `speakers.${i}.`;
       area.append(h('details.sec', { style: { margin: '8px 0' } }, h('summary', h('span.ttl', x.name), h('span.sub', h('span', { style: { color: cleanColor(x.dq) || 'inherit' } }, x.dq ? '“대사 색”' : '대사 색 기본'))),
-        h('div.body', cColor(p + 'dq', '대사 색 ("…" 「…」)', { empty: true }), cColor(p + 'sq', '생각 색 (\'…\')', { empty: true }), cColor(p + 'label', '이름표 색', { empty: true }),
+        h('div.body', cColor(p + 'dq', '대사 색 ("…" 「…」)', { empty: true }), cColor(p + 'sq', '생각 색 (\'…\')', { empty: true }),
+          UI.when(cColor(p + 'narr', '지문 색', { empty: true, help: '이 화자 메시지의 평문 · 소설 틀' }), () => P.style.layout.template !== 'messenger'),
+          cColor(p + 'label', '이름표 색', { empty: true }),
           UI.when(cFont(p + 'font', '대사 글꼴', { inherit: '대사 기본 글꼴 따름', help: '"…" 「…」 안만 · 소설 틀' }), () => P.style.layout.template !== 'messenger'), cCheck(p + 'bold', '대사 굵게'),
           UI.when(h('div', h('div.sub-h', '메신저'),
             cSeg(p + 'side', '말풍선 위치', [['left', '왼쪽'], ['right', '오른쪽 (나)'], ['center', '가운데 안내문']]),
@@ -3077,11 +3311,11 @@ function buildSpeakerSec(b) {
     });
     const unused = S.speakers.filter(x => !names.includes(x.name)).length;
     area.append(h('div.row', { style: { marginTop: '10px' } },
-      h('button.btn.sm', { type: 'button', onclick: () => { let k = 0; for (const x of P.style.speakers) if (names.includes(x.name) && !x.dq) x.dq = SPK_COLORS[k++ % SPK_COLORS.length]; UI.refresh(); render(); commit(true); draw(); toast('대사 색을 자동으로 정했어요 (되돌리기 가능)'); } }, '대사 색 자동 배정'),
+      h('button.btn.sm', { type: 'button', onclick: () => { let k = 0; const pal = (lum(effectiveBg()) ?? 1) < 0.2 ? SPK_COLORS_DARK : SPK_COLORS; for (const x of P.style.speakers) if (names.includes(x.name) && !x.dq) x.dq = pal[k++ % pal.length]; UI.refresh(); render(); commit(true); draw(); toast('대사 색을 자동으로 정했어요 (되돌리기 가능)'); } }, '대사 색 자동 배정'),
       h('button.btn.sm', { type: 'button', onclick: () => draw() }, '화자 목록 새로 고침'),
       unused ? h('button.btn.sm.ghost', { type: 'button', onclick: () => { P.style.speakers = P.style.speakers.filter(x => names.includes(x.name)); render(); commit(true); draw(); } }, `안 쓰는 화자 ${unused}명 지우기`) : null));
   };
-  b.append(h('p.help', '[msg=이름] 아래의 메시지, 또는 [sp=이름]으로 감싼 대사에 그 화자의 대사 색이 적용돼요. 비워 두면 [글자 요소]의 기본 대사 색을 써요. 메신저 틀에서는 화자마다 말풍선 위치·색·프로필 사진도 여기서 정해요.'), area);
+  b.append(h('p.help', '[msg=이름] 아래의 메시지, 또는 [sp=이름]으로 감싼 대사에 그 화자의 대사 색이 적용돼요. 지문 색은 [msg=이름] 아래 문단의 평문(따옴표·별표 밖)에 적용돼요. 비워 두면 [글자 요소]의 기본 대사 색을 써요. 메신저 틀에서는 화자마다 말풍선 위치·색·프로필 사진도 여기서 정해요.'), area);
   UI.on('speakers', path => { if (!path) draw(); });
   draw();
 }
@@ -3111,7 +3345,7 @@ const MSGR_PRESETS = [
 function buildMsgrSec(b) {
   const grid = h('div.mpre');
   MSGR_PRESETS.forEach(p => grid.append(h('button', { type: 'button', onclick: () => {
-    Object.assign(P.style.msgr, p.m); P.style.card.color = p.card; P.style.card.alpha = 100; P.style.layout.cardOn = true; if (p.text) P.style.text.color = p.text;
+    Object.assign(P.style.msgr, p.m); P.style.card.color = p.card; P.style.card.alpha = 100; P.style.layout.cardOn = true; if (p.text) { P.style.text.color = p.text; P.style.roles.narr.color = ''; }
     UI.refresh(); render(); commit(true); toast(`「${p.n}」 말풍선 색을 적용했어요 (되돌리기 가능)`);
   } }, h('span.mpv', { style: { background: p.card } },
     h('i', { style: { background: p.m.lBg, border: p.m.lBorder ? `1px solid ${p.m.lBorder}` : '0' } }), h('i.r', { style: { background: p.m.rBg } })), h('span.tn', p.n))));
@@ -3247,6 +3481,7 @@ async function extractPalette(box) {
         const S = P.style;
         if (dark) { S.card.color = byL[0].hx; S.card.alpha = 86; S.text.color = '#ECE6DA'; }
         else { S.card.color = byL[byL.length - 1].hx; S.card.alpha = 90; S.text.color = '#2E2B27'; }
+        S.roles.narr.color = '';   // 지문 색이 따로 있으면 새 카드 색 위에서 안 보일 수 있어서 본문 색으로
         S.layout.cardOn = true;
         if (accent) { S.roles.dq.color = accent.hx; S.hr.color = accent.hx; S.cover.kickerColor = accent.hx; }
         UI.refresh(); render(); commit(true); toast('그림에 맞춰 카드·글자·대사 색을 바꿨어요 (되돌리기 가능)');
@@ -3294,11 +3529,15 @@ const OutPanel = {
       if (o.warns.length) E.warn.append(h('div.note.warn', h('b', '확인할 점'), h('ul', o.warns.map(w => h('li', w)))));
       else E.warn.append(h('div.note.ok', '특별히 걸리는 점이 없어요. 그래도 처음 쓰는 사이트라면 시험 게시를 권해요.'));
       if (E.code.dataset.open) E.code.value = o.text;
-    } catch (e) { E.stat.innerHTML = ''; E.warn.innerHTML = ''; E.warn.append(h('div.note.err', '만들기 실패: ' + (e && e.message || e))); Log.err('내보내기 실패', e && e.stack); }
+    } catch (e) { this.last = null; /* 실패하면 지난 결과를 복사·저장하지 않게 */ E.stat.innerHTML = ''; E.warn.innerHTML = ''; E.warn.append(h('div.note.err', '만들기 실패: ' + (e && e.message || e))); Log.err('내보내기 실패', e && e.stack); }
     this.busy = false;
     if (this.stale && APPST.tab === 'out') this.refreshLater();
   },
-  async ensure() { while (this.busy) await sleep(80); if (this.stale || !this.last) await this.refresh(); return this.last; },
+  async ensure() {
+    while (this.busy) await sleep(80); if (this.stale || !this.last) await this.refresh();
+    if (!this.last) toast('코드를 만들지 못했어요. 아래 오류 내용을 확인해 주세요', 'err', 4000);
+    return this.last;
+  },
   build(root) {
     this.built = true; const E = this.el;
     const profDesc = h('div.help'); const custom = h('div');
@@ -3350,6 +3589,7 @@ const OutPanel = {
         UI.when(cRange('img.maxH', '한 장 높이', 400, 8000, 10, 'px', { hardMax: 40000, help: '완성된 그림의 픽셀' }), () => P.img.split === 'height'),
         UI.when(cCheck('img.pageNo', '쪽 번호 넣기', '여러 장일 때 아래 가운데에 1/3처럼'), () => P.img.split !== 'auto'),
         h('p.help', '문단 사이에서 고르게 잘라서 글줄이 반으로 잘리지 않아요. 장마다 위아래 여백과 둥근 모서리를 따로 넣어서 한 장 한 장이 독립된 카드처럼 보이고, 모든 장이 같은 크기로 나와요. [안 나눔]이어도 기기 그림 한도를 넘으면 자동으로 나눠요.'),
+        WEBKIT ? h('div.note.warn', '아이폰·사파리: 글꼴이 늦게 그려져 빠지거나, 브라우저가 이미지 만들기를 막을 수 있어요. 결과 그림을 꼭 확인하고, 안 되면 PC·안드로이드의 크롬에서 해 보세요. WEBP는 PNG로 저장될 수 있어요.') : null,
         h('div.row', { style: { marginTop: '8px' } }, h('button.btn.pri', { type: 'button', html: ico('image') + '이미지 만들기', onclick: () => makeImages() })),
         prog, progTxt, imgRes,
         h('p.help', '스크롤 상자·접기는 이미지에선 펼쳐서 그려요. 아주 긴 로그를 한 장으로 하려면 선명도를 낮추세요(폰 그림 크기 한도 때문).'))
@@ -3431,6 +3671,8 @@ const MorePanel = {
           h('button.btn.sm', { type: 'button', html: ico('bug') + '진단 화면', onclick: () => Diag.open() }),
           h('button.btn.sm', { type: 'button', onclick: () => openCheatSheet() }, '문법 안내'),
           h('button.btn.sm.warn', { type: 'button', onclick: () => this.wipe() }, '이 앱 데이터 모두 지우기'))),
+      h('div.card', h('h3', '앱 화면'), uiThemeSeg(),
+        h('p.help', '로꾸방 화면의 밝기예요. 위쪽 ◐ 버튼으로도 바꿀 수 있어요. 미리보기 안의 로그 색과 내보내는 결과는 바뀌지 않아요. PC에서는 작업창 오른쪽 경계를 끌어 폭을 바꿀 수 있어요(두 번 누르면 기본 폭).')),
       h('div.card', h('h3', '정보'), h('p.help', { style: { marginTop: 0 } }, `로꾸방 v${APP_VER} · 서버 없이 이 브라우저 안에서만 동작해요. 글꼴 파일(jsDelivr·구글·네이버)을 받을 때만 외부에 접속해요. 1단계: 소설 틀·꾸미기·내보내기 / 2단계(진행 중): 화자별 꾸미기·메신저 틀 / 3단계 예정: AI 연결.`))
     );
   },
@@ -3486,7 +3728,10 @@ const MorePanel = {
     const have = new Set(((await DB.all('projects')) || []).map(p => p.id));
     for (const raw of ps) { const p = normalizeProject(raw); if (have.has(p.id)) { p.id = uid(); p.name += ' (백업)'; } await DB.put('projects', p); }
     if (Array.isArray(j.themes)) { APPST.userThemes = [...j.themes.filter(t => t && isObj(t.style)).map(t => ({ name: String(t.name || '테마'), style: normalizeStyle(t.style), at: t.at || Date.now() })), ...APPST.userThemes]; await DB.setkv('themes', APPST.userThemes); }
-    if (Array.isArray(j.customFonts)) { for (const cf of j.customFonts) if (cf && cf.id && !APPST.customFonts.some(x => x.id === cf.id) && (cf.kind === 'css' || cf.kind === 'url')) APPST.customFonts.push(Object.assign({ custom: true, c: 'mine', fb: FB.sans }, cf)); await saveCustomFonts(); }
+    if (Array.isArray(j.customFonts)) {   // 기기 파일 글꼴은 백업에 없음 — 코드·주소·이름만 글꼴을 가져옴
+      for (const raw of j.customFonts) { const cf = sanitizeCustomFont(raw); if (cf && cf.kind !== 'file' && !APPST.customFonts.some(x => x.id === cf.id)) APPST.customFonts.push(cf); }
+      await saveCustomFonts();
+    }
     toast('백업을 가져왔어요'); this.refresh();
   },
   async wipe() {
@@ -3788,10 +4033,15 @@ function updBadge() { const b = $('#rulesBadge'); if (b) { const n = P.rules.fil
    글꼴은 파일을 data:로 넣어서, 그리는 순간 '아직 안 받은 글자 조각' 때문에 글꼴이 섞이는 문제를 막음 */
 let imgResults = [];
 function clearImgResults() { for (const r of imgResults) URL.revokeObjectURL(r.url); imgResults = []; }
+/* 사파리 엔진: 아이폰·아이패드의 모든 브라우저(크롬 앱 포함)와 맥 사파리 */
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const WEBKIT = IOS || (/Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|Edg|OPR|Firefox|Android/.test(navigator.userAgent));
+const SAFARI_BLOCK = '이 브라우저가 보안 정책 때문에 이미지 만들기를 막았어요 (사파리·아이폰에서 생길 수 있어요). PC의 크롬·엣지나 안드로이드 크롬에서 해 보세요.';
 function canvasLimits() {
   // 안드로이드 크롬 기준으로 넉넉히 안전한 값 (기기 메모리가 작으면 더 낮을 수 있음)
+  // 아이폰·아이패드는 그림 넓이 한도가 약 1,677만 화소 — 넘으면 빈 그림이 나옴
   const lowMem = navigator.deviceMemory && navigator.deviceMemory <= 3;
-  return { side: 16384, area: lowMem ? 16e6 : 32e6 };
+  return { side: 16384, area: IOS || lowMem ? 16e6 : 32e6 };
 }
 /* 이미지 폭 (CSS px). 내용 폭보다 넓을 필요는 없어서 직접 입력이 아니면 내용 폭으로 제한 */
 function imageWidth() {
@@ -3879,6 +4129,8 @@ async function svgImage(xhtml, w, h, dy, scale) {
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   await new Promise((ok, no) => { img.onload = ok; img.onerror = () => no(new Error('그림 변환에 실패했어요 (내용이 너무 크거나 브라우저가 거부)')); });
   try { await img.decode(); } catch (e) {}
+  // 사파리는 SVG 그림 안의 글꼴·그림을 처음 그릴 때 빠뜨리는 일이 있어서, 작게 한 번 미리 그려 두고 기다림
+  if (WEBKIT) { const t = document.createElement('canvas'); t.width = 64; t.height = 64; try { t.getContext('2d').drawImage(img, 0, 0, 64, 64); } catch (e) {} t.width = t.height = 0; await sleep(300); }
   await sleep(40);
   return img;
 }
@@ -3899,14 +4151,17 @@ async function drawPiece(job, i) {
   if (n > 1 && I.pageNo !== false) {
     // 아래 가운데에 작고 연하게 (바깥 여백이 넉넉하면 그 안, 아니면 카드 아래 여백 안)
     const x = Math.round((W / 2) * scale), y = Math.round((O >= 16 ? Tf - O / 2 : Tf - O - Math.max(pad, 16) / 2) * scale);
-    const px = g.getImageData(clamp(x, 0, cv.width - 1), clamp(y, 0, cv.height - 1), 1, 1).data;
+    let px = [255, 255, 255, 0];
+    try { px = g.getImageData(clamp(x, 0, cv.width - 1), clamp(y, 0, cv.height - 1), 1, 1).data; } catch (e) { if (e && e.name === 'SecurityError') throw new Error(SAFARI_BLOCK); }
     const lumv = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
     g.font = `${Math.round(11 * scale)}px system-ui,-apple-system,sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillStyle = px[3] < 40 ? 'rgba(120,120,120,.75)' : lumv > 140 ? 'rgba(0,0,0,.36)' : 'rgba(255,255,255,.58)';
     g.fillText(`${i + 1}/${n}`, x, y);
   }
   const mime = I.fmt === 'jpeg' ? 'image/jpeg' : I.fmt === 'webp' ? 'image/webp' : 'image/png';
-  const blob = await new Promise(ok => cv.toBlob(ok, mime, clamp(I.quality / 100, 0.5, 1)));
+  let blob;
+  try { blob = await new Promise(ok => cv.toBlob(ok, mime, clamp(I.quality / 100, 0.5, 1))); }
+  catch (e) { if (e && e.name === 'SecurityError') throw new Error(SAFARI_BLOCK); throw e; }
   const w = cv.width, hgt = cv.height; cv.width = cv.height = 0;
   if (!blob) throw new Error('그림 파일을 만들지 못했어요 (메모리 부족일 수 있어요 — 선명도를 낮춰 보세요)');
   return { blob, w, h: hgt };
@@ -3941,10 +4196,13 @@ async function makeImages() {
     if (sp === 'count' && n !== Math.round(num(P.img.count, 3))) notes.push(`한 장이 이 기기의 그림 한도를 넘어서 ${n}장으로 늘렸어요.`);
     Log.info(`이미지: 폭 ${W}px · 글 높이 ${m.H}px · ${n}장 · 한 장 ${Tf}px · 배율 ${scale}`, `한도 ${limit}px`);
     const job = { R, W, Wc, Tf, O, pad: Pd, n, scale, xhtml: toXhtml(o.css, o.html), segs };
+    const want = P.img.fmt === 'jpeg' ? 'image/jpeg' : P.img.fmt === 'webp' ? 'image/webp' : 'image/png';
     for (let i = 0; i < n; i++) {
       setP(0.35 + 0.6 * (i / n), `그리는 중… ${i + 1} / ${n}장`);
       const r = await drawPiece(job, i);
-      const ext = P.img.fmt === 'jpeg' ? 'jpg' : P.img.fmt;
+      // 사파리 등은 WEBP로 저장하지 못하면 PNG를 돌려줌 — 파일 이름도 실제 형식으로
+      const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[r.blob.type] || (P.img.fmt === 'jpeg' ? 'jpg' : P.img.fmt);
+      if (i === 0 && r.blob.type && r.blob.type !== want) notes.push(`이 브라우저는 ${P.img.fmt.toUpperCase()}로 저장할 수 없어서 ${ext.toUpperCase()}로 저장했어요.`);
       const name = `${safeName(P.meta.title || P.name)}${n > 1 ? '_' + String(i + 1).padStart(2, '0') : ''}.${ext}`;
       imgResults.push({ ...r, name, url: URL.createObjectURL(r.blob) });
     }
@@ -4075,6 +4333,28 @@ const Diag = {
   }
 };
 
+/* ═════════ 앱 화면 테마 (자동·밝게·어둡게) — 로그 미리보기·내보내기 색과는 상관없음 ═════════ */
+const UI_THEMES = [['auto', '자동 (기기 설정)'], ['light', '밝게'], ['dark', '어둡게']];
+const darkMq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+function applyUiTheme(v, save) {
+  if (!UI_THEMES.some(x => x[0] === v)) v = 'auto';
+  APPST.prefs.uiTheme = v; const root = document.documentElement;
+  if (v === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', v);
+  try { localStorage.setItem('la-ui-theme', v); } catch (e) {}   // <head>에서 먼저 적용하려고 따로 둠
+  const dark = v === 'dark' || (v === 'auto' && !!darkMq && darkMq.matches);
+  $('meta[name="theme-color"]').content = dark ? '#191816' : '#F5F2EC';
+  const b = $('#btnTheme'), name = UI_THEMES.find(x => x[0] === v)[1];
+  b.innerHTML = ico(v === 'dark' ? 'moon' : v === 'light' ? 'sun' : 'halfmoon'); b.title = '화면 테마: ' + name; b.setAttribute('aria-label', b.title);
+  UI.fire('app.uiTheme');
+  if (save) savePrefsLater();
+}
+function uiThemeSeg() {
+  const bs = UI_THEMES.map(([v, l]) => h('button', { type: 'button', onclick: () => applyUiTheme(v, true) }, l));
+  const seg = h('div.seg', bs);
+  const upd = () => bs.forEach((b, i) => b.classList.toggle('on', UI_THEMES[i][0] === (APPST.prefs.uiTheme || 'auto')));
+  UI.on('app.', upd, seg); upd(); return seg;
+}
+
 /* ═════════ 시작 ═════════ */
 const PANES = {};
 function buildTextPanel(root) {
@@ -4178,6 +4458,12 @@ async function init() {
   $('#projName').textContent = P.name;
   Ed.setValue(P.text, [0, 0]); Hist.reset(); updBadge();
   $('#btnUndo').onclick = () => Hist.undo(); $('#btnRedo').onclick = () => Hist.redo();
+  applyUiTheme(APPST.prefs.uiTheme || 'auto');
+  $('#btnTheme').onclick = () => {
+    const order = UI_THEMES.map(x => x[0]); const v = order[(order.indexOf(APPST.prefs.uiTheme || 'auto') + 1) % order.length];
+    applyUiTheme(v, true); toast('화면 테마: ' + UI_THEMES.find(x => x[0] === v)[1]);
+  };
+  if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', () => { if ((APPST.prefs.uiTheme || 'auto') === 'auto') applyUiTheme('auto'); });
   $('#brand').onclick = () => switchTab('more');
   $$('#tabs .tab').forEach(b => (b.onclick = () => switchTab(b.dataset.tab)));
   $$('#pvSize button').forEach(b => (b.onclick = () => setPvSize(b.dataset.v)));
@@ -4188,7 +4474,7 @@ async function init() {
     h('dt', '사이트 바탕'), h('dd', '로그 바깥, 사이트 게시판의 바탕색을 흉내 내요. 흰 바탕 사이트·어두운 사이트에서 어떻게 보일지 확인용이고 결과물엔 영향이 없어요.'))));
   const mini = (sel, key, after) => $$(sel + ' button').forEach(b => { b.classList.toggle('on', b.dataset.v === APPST.prefs[key]); b.onclick = () => { APPST.prefs[key] = b.dataset.v; $$(sel + ' button').forEach(x => x.classList.toggle('on', x === b)); savePrefsLater(); after(); }; });
   mini('#pvWidth', 'pvW', () => { PV.layout(); OutPanel.updInfo && OutPanel.updInfo(); }); mini('#pvBg', 'pvBg', () => PV.applyBg());
-  initGrip(); PV.init();
+  initGrip(); initPanelGrip(); PV.init();
   switchTab(APPST.prefs.lastTab && PANES[APPST.prefs.lastTab] ? APPST.prefs.lastTab : 'text');
   window.addEventListener('resize', debounce(() => { if (!document.documentElement.classList.contains('kb')) setPvSize(APPST.prefs.pv[APPST.tab] || 'm', false); }, 200));
   initKeyboardWatch();
